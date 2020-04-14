@@ -2,7 +2,6 @@
 
 Online chess platform. Connect, play against other users, watch replays of your games as well as famous chess games, track progress on leaderboard.
 
----
 
 ## Features:
 
@@ -13,7 +12,6 @@ Online chess platform. Connect, play against other users, watch replays of your 
 - view leaderboard with best players on top
 - replay a game from the list of already played games
 
----
 
 ## Server side: Node.js with following frameworks/services:
 
@@ -33,3 +31,8 @@ Online chess platform. Connect, play against other users, watch replays of your 
 
 - Testing will be done using Jest
 - To replay famous games we can scrape data from a online dataset: https://www.chessgames.com
+
+
+## General Architecture :
+
+![architecture diagram](https://i.ibb.co/SsnW5hP/Webchess-architecture.png)
