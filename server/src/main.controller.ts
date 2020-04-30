@@ -1,14 +1,14 @@
 import { Application } from 'express';
 import OktaJwtVerifier from '@okta/jwt-verifier';
 
-import { PlayerService } from './services/player.service';
+import { PlayerController } from './controllers/player.controller';
 
 export class Controller {
-  private playerService: PlayerService;
+  private playerController: PlayerController;
   private jwtVerifier: any;
 
   constructor(private app: Application) {
-    this.playerService = new PlayerService();
+    this.playerController = new PlayerController();
     this.routes();
 
     this.jwtVerifier = new OktaJwtVerifier({
@@ -43,14 +43,14 @@ export class Controller {
   }
 
   public routes() {
-    this.app.route('/').get(this.playerService.welcomeMessage);
+    this.app.route('/').get(this.playerController.welcomeMessage);
 
     this.app.route('/auth').get(this.authRequired.bind(this), (req, res) => { res.json({m:'yes'}) });
 
-    this.app.route('/players').get(this.playerService.getAllPlayers);
-    this.app.route('/player').post(this.playerService.addNewPlayer);
-    this.app.route('/player/:id').get(this.playerService.getPlayer);
-    this.app.route("/player/:id").delete(this.playerService.deletePlayer);
-    this.app.route('/player/:id').put(this.playerService.updatePlayer);
+    this.app.route('/players').get(this.playerController.getAllPlayers);
+    this.app.route('/player').post(this.playerController.addNewPlayer);
+    this.app.route('/player/:id').get(this.playerController.getPlayer);
+    this.app.route("/player/:id").delete(this.playerController.deletePlayer);
+    this.app.route('/player/:id').put(this.playerController.updatePlayer);
   }
 }

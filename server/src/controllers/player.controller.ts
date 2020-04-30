@@ -3,7 +3,7 @@ import { Types, MongooseDocument, Query } from "mongoose";
 
 import { Player } from "../models/player.model";
 
-export class PlayerService {
+export class PlayerController {
   public welcomeMessage(req: Request, res: Response) {
     return res.status(200).send("Welcome to chessAPI!");
   }
