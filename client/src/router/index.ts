@@ -3,6 +3,7 @@ import Router from 'vue-router'
 import Auth from '@okta/okta-vue'
 
 import Home from '../views/Home.vue'
+import Chess from '../components/Chessboard.vue'
 
 Vue.use(Auth, {
   issuer: 'https://dev-232123.okta.com/oauth2/default',
@@ -21,6 +22,11 @@ const router = new Router({
       path: '/',
       name: 'home',
       component: Home
+    },
+    {
+      path: '/play',
+      name: 'chess',
+      component: Chess
     },
     {
       path: '/implicit/callback',
