@@ -1,14 +1,18 @@
 <template>
   <div id="app">
-    <div id="nav">
+    <div class="header">
+      <img src="@/assets/chess.png" alt="">
+      <div class="header-text"> WebChess </div>
+    </div>
+    <!-- <div id="nav">
       <router-link to="/">Home</router-link> |
       <router-link to="/about">About</router-link>
-    </div>
+    </div> -->
     <div>
-      <button v-if="authenticated" v-on:click="logout" id="logout-button"> Logout </button>
-      <button v-if="authenticated" v-on:click="getInfo"> Get User Info </button>
-      <button v-if="authenticated" v-on:click="getToken"> Get Token </button>
-      <button v-else v-on:click="$auth.loginRedirect()" id="login-button"> Login </button>
+      <button class="menu-item" v-if="authenticated" v-on:click="logout" id="logout-button"> Logout </button>
+      <!-- <button class="menu-item" v-if="authenticated" v-on:click="getInfo"> Get User Info </button>
+      <button class="menu-item" v-if="authenticated" v-on:click="getToken"> Get Token </button> -->
+      <button class="menu-item" v-else v-on:click="$auth.loginRedirect()" id="login-button"> Login </button>
     </div>
     <router-view/>
   </div>
@@ -50,10 +54,36 @@ export default class App extends Vue {
 </script>
 
 <style lang="less">
+* {
+  box-sizing: border-box;
+}
+.header {
+  width: 330px;
+  margin: auto;
+  color: #27242b;
+  border-bottom: 2px solid #27242b;
+  margin-bottom: 10px;
+  pointer-events: none;
+  user-select: none;
+}
+.header-text {
+  margin: 0;
+  font-size: 40px;
+  font-family: Cambria;
+}
+.header > img {
+  width: 330px;
+}
+
+.menu-item {
+  font-family: 'Libre Baskerville', serif;
+  padding: 4px 8px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+
 #app {
-  font-family: Avenir, Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
 }
