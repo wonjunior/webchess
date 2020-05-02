@@ -4,6 +4,7 @@
     <div class="body">
       <div class="side">
         <Friendslist :friends="friends" @findPlayer="findPlayer" />
+        <SearchPlayer @find-player="findPlayer" />
       </div>
       <div class="main">
         <PlayerStats :elo="elo" :wins="wins" :losses="losses" :previousElo="previousElo" />
@@ -16,10 +17,11 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 import Friendslist from '@/components/FriendsList.vue'
+import SearchPlayer from '@/components/SearchPlayer.vue'
 import PlayerStats from '@/components/stats/PlayerStats.vue'
 
 @Component({
-  components: { Friendslist, PlayerStats }
+  components: { Friendslist, SearchPlayer, PlayerStats }
 })
 export default class App extends Vue {
   name = 'Jean-Claude Van Damme'
