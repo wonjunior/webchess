@@ -26,6 +26,14 @@
             <div>Elo rating:</div>
             <div class="player-elo">{{ elo }}</div>
           </div>
+          <div class="stat">
+            <div>Player progression:</div>
+            <div class="average-elo">elo average ~ {{ averageElo }}</div>
+            <svg :viewBox="`0 0 ${viewBoxWidth} ${viewBoxHeight}`" class="elo-chart">
+              <polyline fill="none" stroke="#df8695" stroke-width="3" :points="svgPreviousElo()" />
+              <polyline fill="none" stroke="blue" stroke-width="2" stroke-dasharray="4" :points="svgAverageElo()" />
+            </svg>
+          </div>
         </div>
       </div>
     </div>
@@ -45,10 +53,32 @@ export default class App extends Vue {
   ]
   wins = 20
   losses = 10
-  elo = 300
+  elo = 410
+  previous_elo = [ 510, 505, 515, 526, 540, 437, 416, 700, 500 ]
+
+  viewBoxWidth = 400
+  viewBoxHeight = 100
 
   get winRate(): number {
     return this.wins / (this.losses + this.wins) * 100
+  }
+
+  get averageElo(): number {
+    return Math.round(this.previous_elo.reduce((a,b) => a+b) / (this.previous_elo.length || 1))
+  }
+
+  svgPreviousElo() {
+    return this.svgPolyline(this.previous_elo)
+  }
+
+  svgAverageElo() {
+    return this.svgPolyline(new Array(this.previous_elo.length).fill(this.averageElo))
+  }
+
+  svgPolyline(values: number[]) {
+    const [ min, max ] = [ Math.min(...this.previous_elo), Math.max(...this.previous_elo) ]
+    const range = max - min
+    return values.map((y, x) => `${x * this.viewBoxWidth / values.length},${(max - y) * this.viewBoxHeight / range}`).join(' ')
   }
 }
 </script>
@@ -84,7 +114,6 @@ export default class App extends Vue {
   list-style-type: none;
   margin: 10px;
   float: right;
-  height: 300px;
 }
 .stat > div {
   display: inline-block;
@@ -95,6 +124,21 @@ export default class App extends Vue {
 }
 .stat > * {
   vertical-align: middle;
+}
+
+.elo-chart {
+  display: block;
+  width: 75%;
+  height: 200px;
+  margin: 30px 20px 20px 50px;
+  padding: 0;
+  overflow: visible;
+  border-left: 2px dotted #555;
+  border-bottom: 2px dotted #555;
+  background: white;
+}
+.average-elo {
+  margin-left: 30px;
 }
 .player-elo {
   font-size: 30px;
