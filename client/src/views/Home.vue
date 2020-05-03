@@ -20,6 +20,7 @@ import Friendslist from '@/components/FriendsList.vue'
 import SearchPlayer from '@/components/SearchPlayer.vue'
 import PlayerStats from '@/components/stats/PlayerStats.vue'
 
+import Player from '../models/Player'
 @Component({
   components: { Friendslist, SearchPlayer, PlayerStats }
 })

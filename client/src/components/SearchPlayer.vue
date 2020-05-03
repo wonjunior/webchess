@@ -8,9 +8,11 @@
 <script lang="ts">
 import { Component, Vue, Emit } from 'vue-property-decorator'
 
+import Player from '../models/Player'
 @Component
 export default class SearchPlayer extends Vue {
   task = ''
+  players = [] as Player[]
 
   @Emit()
   findPlayer() {
