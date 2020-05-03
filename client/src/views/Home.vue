@@ -3,8 +3,8 @@
     <h2>Welcome back {{name}}</h2>
     <div class="body">
       <div class="side">
-        <Friendslist :friends="friends" @findPlayer="findPlayer" />
-        <SearchPlayer @find-player="findPlayer" />
+        <Friendslist :friends="friends" />
+        <SearchPlayer @add-player="addPlayer" />
       </div>
       <div class="main">
         <PlayerStats :elo="elo" :wins="wins" :losses="losses" :previousElo="previousElo" />
@@ -21,6 +21,7 @@ import SearchPlayer from '@/components/SearchPlayer.vue'
 import PlayerStats from '@/components/stats/PlayerStats.vue'
 
 import Player from '../models/Player'
+
 @Component({
   components: { Friendslist, SearchPlayer, PlayerStats }
 })
@@ -36,8 +37,8 @@ export default class App extends Vue {
   elo = 410
   previousElo = [ 510, 505, 515, 526, 540, 437, 416, 700, 500 ]
 
-  findPlayer(player: string) {
-    console.log(player)
+  addPlayer(player: Player) {
+    if (player) this.friends.push(player)
   }
 }
 
@@ -56,7 +57,7 @@ export default class App extends Vue {
 }
 .side {
  width: 275px;
- padding-top: 50px;
+ margin-top: -9px;
 }
 .main {
   width: calc(100% - 275px - 20px);
