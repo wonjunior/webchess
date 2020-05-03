@@ -23,7 +23,16 @@ export class Controller {
   }
 
   public authRequired(req: any, res: any, next: any) {
-    req.params.email = "ivan.lopes@tsp.eu"
+    // try {
+    //   req.body.player = await PlayerEntity.findOne({email: req.params.email})
+    //   if (req.body.player == null)
+    //     return res.json({error: "wrong email given in the token"})
+    // }
+    // catch (e) {
+    //   return res.send({error: "An error occured in the server"})
+    // }
+
+
     const authHeader = req.headers.authorization || '';
     const match = authHeader.match(/Bearer (.+)/);
 
@@ -52,7 +61,7 @@ export class Controller {
 
     //players
     this.app.route('/players').get(this.authRequired, this.playerController.getAllPlayers);
-    this.app.route('/player/add').post(this.authRequired, this.playerController.addNewPlayer);
+    this.app.route('/player').post(this.authRequired, this.playerController.addNewPlayer);
     this.app.route('/player').get(this.authRequired, this.playerController.getPlayer);
     this.app.route("/player/:id").delete(this.authRequired, this.playerController.deletePlayer);
     this.app.route('/player/:id').put(this.authRequired, this.playerController.updatePlayer);

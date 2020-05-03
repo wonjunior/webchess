@@ -1,80 +1,42 @@
 
 
-import { PlayerEntity } from "../schemas/player.schema";
+import { PlayerEntity, Player } from "../schemas/player.schema";
 import { Types, MongooseDocument } from "mongoose";
 
 
+const defaultErrorMsg = "An error occured with the database of the server"
 
 export class PlayerModel {
 
-  async getFriends(email: string) {
-    try {
-      const player = await PlayerEntity.findOne({email})
-      if (player == null) return {error: true, friends: []}
-      
-      const friends = await PlayerEntity.find({
-        '_id': { $in: player.friends}});
-
-      return {error: false, friends}
-    }
-    catch(e) {
-      return {error: true, friends: []}
-    }  
+  getFriends(player: Player) {
+    return PlayerEntity
+      .find({'_id': { $in: player.friends}})
+      .catch(() => ({error: defaultErrorMsg}))
   }
 
-  async addFriend(email: string, idFriend: string) {
-    try {
-      const player = await PlayerEntity.findOne({email});
-      if (player == null) {
-        return {error: true}
-      }
-    //  const error = await PlayerEntity.exists({_id: idFriend})
+  async addFriend(player: Player, idFriend: string) {
+    const response = await PlayerEntity
+      .findByIdAndUpdate(idFriend, {$addToSet: { friends: player.id } })
+      .catch(() => ({error: "The player you tried to add as friend does not exist" }))
+  
+    if (response.error) return response
 
-      const friend = await PlayerEntity.findByIdAndUpdate(idFriend, {
-        $addToSet: {friends: player.id}
-      })
-      if (friend == null) return {error: true}
-
-      await PlayerEntity.findByIdAndUpdate(player.id, {
-        $addToSet: {friends: idFriend}
-      })  
-      return {error: false}
-    }
-    catch(e) {
-      return {error: true}
-    }
-
+    return await PlayerEntity
+      .findByIdAndUpdate(player.id, { $addToSet: { friends: idFriend } })
+      .then(() => ({}))
+      .catch(() => ({ error: defaultErrorMsg }))
   }
 
-  async deleteFriend(email: string, idFriend: string) {
-    try {
-      const player = await PlayerEntity.findOne({email});
-      if (player == null) {
-        return {error: true}
-      }
-      await PlayerEntity.findByIdAndUpdate(idFriend, {
-        $pull: {friends: player.id}
-      })
-      await PlayerEntity.findByIdAndUpdate(player.id, {
-        $pull: {friends: idFriend}
-      })  
-      return {error: false}
-    }
-    catch(e) {
-      return {error: true}
-    }
+  async deleteFriend(player: Player, idFriend: string) {
+    return await Promise.all([
+      PlayerEntity.findByIdAndUpdate(idFriend, {$pull: { friends: player.id } }),
+      PlayerEntity.findByIdAndUpdate(player.id, { $pull: { friends: idFriend } })
+    ])
+      .catch(() => ({ error: defaultErrorMsg }))
+      .then(() => ({}))
   }
 
-  async get(playerEmail: string) {
-    try{
-      const player = await PlayerEntity.find({email: playerEmail});
-      return player
-    }
-    catch(error) {
-      return null
-    }
 
-  }
   
   async delete(playerEmail: string)
   {

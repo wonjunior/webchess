@@ -27,13 +27,14 @@ export class PlayerController {
 
   //Friends
   public async addFriend(req: Request, res: Response) {
-    res.json(await new PlayerModel().addFriend(req.params.email, req.params.id))
+    res.json(await new PlayerModel().addFriend(req.body.player, req.params.id))
+
   }
   public async deleteFriend(req: Request, res: Response) {
-    res.json(await new PlayerModel().deleteFriend(req.params.email, req.params.id))
+    res.json(await new PlayerModel().deleteFriend(req.body.player, req.params.id))
   }
   public async getFriends(req: Request, res: Response) {
-    res.json(await new PlayerModel().getFriends(req.params.email))
+    res.json(await new PlayerModel().getFriends(req.body.player))
   }
 
   public async addNewPlayer(req: Request, res: Response) {
