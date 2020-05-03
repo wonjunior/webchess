@@ -6,11 +6,10 @@ import { PlayerModel } from "../models/player.model"
 
 export class PlayerController {
 
-  private playerModel = new PlayerModel();
-
   public welcomeMessage(req: Request, res: Response) {
-    return res.status(200).send("Welcome to chessAPI!");
+    return res.status(200).send(req.params.email);
   }
+
 
   public getAllPlayers(req: Request, res: Response) {
     PlayerEntity.find({}, (error: Error, player: MongooseDocument) => {
@@ -18,6 +17,52 @@ export class PlayerController {
       res.json(player);
     });
   }
+
+  // async-await linear
+  public async getPlayer(req: Request, res: Response) {
+
+   // if (!Types.ObjectId.isValid(req.params.id)) return res.send('not valid id')
+    res.json(req.body.player);
+  }
+
+  //Friends
+  public async addFriend(req: Request, res: Response) {
+    res.json(await new PlayerModel().addFriend(req.params.email, req.params.id))
+  }
+  public async deleteFriend(req: Request, res: Response) {
+    res.json(await new PlayerModel().deleteFriend(req.params.email, req.params.id))
+  }
+  public async getFriends(req: Request, res: Response) {
+    res.json(await new PlayerModel().getFriends(req.params.email))
+  }
+
+  public async addNewPlayer(req: Request, res: Response) {
+    const ok = await new PlayerModel().addNew(req.body);
+    res.json({error: !ok})
+
+  }
+
+  public deletePlayer(req: Request, res: Response) {
+    const playerId = req.params.id;
+    PlayerEntity.findByIdAndDelete(playerId, (error: Error, deleted: any) => {
+      if (error) return res.send(error);
+      const message = deleted ? 'deleted successfully' : 'player not found';
+      // res.json({ message });
+      res.send(message);
+    });
+  }
+
+  public updatePlayer(req: Request, res: Response) {
+    const playerId = req.params.id;
+    PlayerEntity.findByIdAndUpdate(playerId, req.body, (error: Error, player: any) => {
+      if (error) return res.send(error);
+      const message = player ? 'updated succesfully' : 'pokemon not found';
+      res.send(message);
+    });
+  }
+}
+
+
 
   // normal function w/ callback
   // public getPlayer(req: Request, res: Response) {
@@ -47,45 +92,3 @@ export class PlayerController {
   //       res.send('furrrrrrrrh');
   //     });
   // }
-
-  // async-await linear
-  public async getPlayer(req: Request, res: Response) {
-
-    if (!Types.ObjectId.isValid(req.params.id)) return res.send('not valid id')
-
-    const player = await PlayerEntity.findById(req.params.id);
-    if (!player) return res.send('player not found');
-
-    console.log(player);
-    res.send(player);
-  }
-
-  public async addNewPlayer(req: Request, res: Response) {
-
-    const player = await this.playerModel.addNew(req.body);
-    if (player == null) 
-      res.json({error: true})
-    else
-      res.json({error: false})
-
-  }
-
-  public deletePlayer(req: Request, res: Response) {
-    const playerId = req.params.id;
-    PlayerEntity.findByIdAndDelete(playerId, (error: Error, deleted: any) => {
-      if (error) return res.send(error);
-      const message = deleted ? 'deleted successfully' : 'player not found';
-      // res.json({ message });
-      res.send(message);
-    });
-  }
-
-  public updatePlayer(req: Request, res: Response) {
-    const playerId = req.params.id;
-    PlayerEntity.findByIdAndUpdate(playerId, req.body, (error: Error, player: any) => {
-      if (error) return res.send(error);
-      const message = player ? 'updated succesfully' : 'pokemon not found';
-      res.send(message);
-    });
-  }
-}

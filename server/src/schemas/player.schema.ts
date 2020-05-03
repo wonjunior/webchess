@@ -16,4 +16,19 @@ const PlayerSchema = new mongoose.Schema({
   friends: [String],
 });
 
-export const PlayerEntity = mongoose.model("Player", PlayerSchema);
+export interface Player extends mongoose.Document {
+  name: string;
+  email: String;
+  wins: number;
+  losses: number;
+  elo: number;
+  previous_elo: number [];
+  current_game: {
+    white: string;
+    black: string;
+    moves: string;
+  };
+  friends: string[];
+}
+
+export const PlayerEntity = mongoose.model<Player>("Player", PlayerSchema);

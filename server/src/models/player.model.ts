@@ -4,7 +4,66 @@ import { PlayerEntity } from "../schemas/player.schema";
 import { Types, MongooseDocument } from "mongoose";
 
 
+
 export class PlayerModel {
+
+  async getFriends(email: string) {
+    try {
+      const player = await PlayerEntity.findOne({email})
+      if (player == null) return {error: true, friends: []}
+      
+      const friends = await PlayerEntity.find({
+        '_id': { $in: player.friends}});
+
+      return {error: false, friends}
+    }
+    catch(e) {
+      return {error: true, friends: []}
+    }  
+  }
+
+  async addFriend(email: string, idFriend: string) {
+    try {
+      const player = await PlayerEntity.findOne({email});
+      if (player == null) {
+        return {error: true}
+      }
+    //  const error = await PlayerEntity.exists({_id: idFriend})
+
+      const friend = await PlayerEntity.findByIdAndUpdate(idFriend, {
+        $addToSet: {friends: player.id}
+      })
+      if (friend == null) return {error: true}
+
+      await PlayerEntity.findByIdAndUpdate(player.id, {
+        $addToSet: {friends: idFriend}
+      })  
+      return {error: false}
+    }
+    catch(e) {
+      return {error: true}
+    }
+
+  }
+
+  async deleteFriend(email: string, idFriend: string) {
+    try {
+      const player = await PlayerEntity.findOne({email});
+      if (player == null) {
+        return {error: true}
+      }
+      await PlayerEntity.findByIdAndUpdate(idFriend, {
+        $pull: {friends: player.id}
+      })
+      await PlayerEntity.findByIdAndUpdate(player.id, {
+        $pull: {friends: idFriend}
+      })  
+      return {error: false}
+    }
+    catch(e) {
+      return {error: true}
+    }
+  }
 
   async get(playerEmail: string) {
     try{
@@ -30,15 +89,20 @@ export class PlayerModel {
 
   async addNew(reqBody: any) {
 
-    if(!reqBody.name)
-      return false;
+    if(!reqBody.name || !reqBody.email){
+      return false
+    }
 
-    if(reqBody.name == "")
-      return false;
+    const name = reqBody.name;
+    const email = reqBody.email;
 
+    if(name == "" || email == "") {
+      return false
+    }
+  
     const player = new PlayerEntity({
-      name: reqBody.name,
-      email: "",
+      name: name,
+      email: email,
       wins: 0,
       losses: 0,
       elo: 1500,

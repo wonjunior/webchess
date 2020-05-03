@@ -2,6 +2,8 @@ import { Application } from 'express';
 import OktaJwtVerifier from '@okta/jwt-verifier';
 
 import { PlayerController } from './controllers/player.controller';
+import { PlayerModel } from './models/player.model';
+import { PlayerEntity } from './schemas/player.schema';
 
 export class Controller {
   private playerController: PlayerController;
@@ -21,6 +23,7 @@ export class Controller {
   }
 
   public authRequired(req: any, res: any, next: any) {
+    req.params.email = "ivan.lopes@tsp.eu"
     const authHeader = req.headers.authorization || '';
     const match = authHeader.match(/Bearer (.+)/);
 
@@ -43,14 +46,20 @@ export class Controller {
   }
 
   public routes() {
-    this.app.route('/').get(this.playerController.welcomeMessage);
+    this.app.route('/').get(this.authRequired, this.playerController.welcomeMessage);
 
     this.app.route('/auth').get(this.authRequired.bind(this), (req, res) => { res.json({m:'yes'}) });
 
-    this.app.route('/players').get(this.playerController.getAllPlayers);
-    this.app.route('/player').post(this.playerController.addNewPlayer);
-    this.app.route('/player/:id').get(this.playerController.getPlayer);
-    this.app.route("/player/:id").delete(this.playerController.deletePlayer);
-    this.app.route('/player/:id').put(this.playerController.updatePlayer);
+    //players
+    this.app.route('/players').get(this.authRequired, this.playerController.getAllPlayers);
+    this.app.route('/player/add').post(this.authRequired, this.playerController.addNewPlayer);
+    this.app.route('/player').get(this.authRequired, this.playerController.getPlayer);
+    this.app.route("/player/:id").delete(this.authRequired, this.playerController.deletePlayer);
+    this.app.route('/player/:id').put(this.authRequired, this.playerController.updatePlayer);
+
+    //friends
+    this.app.route('/friend/:id').put(this.authRequired, this.playerController.addFriend);
+    this.app.route('/friend/:id').delete(this.authRequired, this.playerController.deleteFriend);
+    this.app.route('/friends').get(this.authRequired, this.playerController.getFriends);
   }
 }
