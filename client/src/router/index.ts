@@ -9,8 +9,8 @@ Vue.use(Auth, {
   issuer: 'https://dev-232123.okta.com/oauth2/default',
   clientId: '0oaanm545S538wrmZ4x6',
   redirectUri: window.location.origin + '/implicit/callback',
-  scopes: ['openid', 'email'],
-  responseType: ['code']
+  scopes: ['openid', 'profile', 'email'],
+  pkce: true
 })
 
 Vue.use(Router)

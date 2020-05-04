@@ -21,6 +21,7 @@ import SearchPlayer from '@/components/SearchPlayer.vue'
 import PlayerStats from '@/components/stats/PlayerStats.vue'
 
 import Player from '../models/Player'
+import Ajax from '../utils/Ajax'
 
 @Component({
   components: { Friendslist, SearchPlayer, PlayerStats }
@@ -36,6 +37,11 @@ export default class App extends Vue {
   losses = 10
   elo = 410
   previousElo = [ 510, 505, 515, 526, 540, 437, 416, 700, 500 ]
+
+  async created() {
+    const token = await this.$auth.getAccessToken()
+    console.log(await new Ajax(token).get('auth'))
+  }
 
   addPlayer(player: Player) {
     if (player) this.friends.push(player)

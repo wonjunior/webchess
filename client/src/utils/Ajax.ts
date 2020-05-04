@@ -46,11 +46,12 @@ export default class Ajax {
   }
 
   private async request(method: HTTPMethod, url: string, data: Record<string, any> | null = null) {
-    const response = await fetch(url, {
+
+    const response = await fetch(this.root + url, {
       method,
       body: data ? JSON.stringify(data) : null,
       headers: {
-        'Authorization': this.authToken,
+        'Authorization': `Bearer ${this.authToken}`,
         'Accept': 'application/json',
         'Content-Type': 'application/json',
       }
