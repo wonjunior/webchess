@@ -1,67 +1,24 @@
+import { Types, MongooseDocument } from 'mongoose'
 
-
-import { PlayerEntity, Player } from "../schemas/player.schema";
-import { Types, MongooseDocument } from "mongoose";
-
-
-const defaultErrorMsg = "An error occured with the database of the server"
+import { PlayerEntity, Player } from '../schemas/player.schema'
+import { databaseErrorHandling } from '../middleware/Helpers'
 
 export class PlayerModel {
+  player: Player
 
-  getFriends(player: Player) {
-    return PlayerEntity
-      .find({'_id': { $in: player.friends}})
-      .catch(() => ({error: defaultErrorMsg}))
-  }
-
-  async addFriend(player: Player, idFriend: string) {
-    const response = await PlayerEntity
-      .findByIdAndUpdate(idFriend, {$addToSet: { friends: player.id } })
-      .catch(() => ({error: "The player you tried to add as friend does not exist" }))
-  
-    if (response.error) return response
-
+  static async all() {
     return await PlayerEntity
-      .findByIdAndUpdate(player.id, { $addToSet: { friends: idFriend } })
-      .then(() => ({}))
-      .catch(() => ({ error: defaultErrorMsg }))
+      .find({})
+      .catch(databaseErrorHandling)
   }
 
-  async deleteFriend(player: Player, idFriend: string) {
-    return await Promise.all([
-      PlayerEntity.findByIdAndUpdate(idFriend, {$pull: { friends: player.id } }),
-      PlayerEntity.findByIdAndUpdate(player.id, { $pull: { friends: idFriend } })
-    ])
-      .catch(() => ({ error: defaultErrorMsg }))
-      .then(() => ({}))
+  constructor(player: Player) {
+    this.player = player
   }
 
+  async create(email: string, name: string) {
+    if (!name) return { error: 'Provided name is not valid' }
 
-  
-  async delete(playerEmail: string)
-  {
-    try {
-      const deleted = await PlayerEntity.findOneAndDelete({email: playerEmail})
-      return true
-    }
-    catch(e) {
-      return false 
-    }
-  }
-
-  async addNew(reqBody: any) {
-
-    if(!reqBody.name || !reqBody.email){
-      return false
-    }
-
-    const name = reqBody.name;
-    const email = reqBody.email;
-
-    if(name == "" || email == "") {
-      return false
-    }
-  
     const player = new PlayerEntity({
       name: name,
       email: email,
@@ -71,15 +28,51 @@ export class PlayerModel {
       previous_elo: [1500],
       current_game: {},
       friends: [],
-    }) 
+    })
 
-    try {
-      await player.save()
-      return true
-    }
-    catch(error) {
-      console.log(error)
-      return false
-    }
+    return await player.save().catch(databaseErrorHandling)
+  }
+
+  async update(email: string, name: string) {
+    if (!name) return { error: 'Provided name is not valid' }
+
+    PlayerEntity
+      .findOneAndUpdate({ email }, { name })
+      .then(() => ({ message: 'Player updated successfully' }))
+      .catch(databaseErrorHandling)
+  }
+
+  async delete(email: string) {
+    return await PlayerEntity
+      .findOneAndDelete({ email })
+      .catch(databaseErrorHandling)
+  }
+
+  async getFriends() {
+    return await PlayerEntity
+      .find({ '_id': { $in: this.player.friends }})
+      .catch(databaseErrorHandling)
+  }
+
+  async addFriend(friendId: string) {
+    const response = await PlayerEntity
+      .findByIdAndUpdate(friendId, { $addToSet: { friends: this.player.id } })
+      .catch(databaseErrorHandling)
+
+    if (response.error) return response
+
+    return await PlayerEntity
+      .findByIdAndUpdate(this.player.id, { $addToSet: { friends: friendId } })
+      .then(() => ({ message: 'Player has been added to your friends list' }))
+      .catch(databaseErrorHandling)
+  }
+
+  async deleteFriend(friendId: string) {
+    return await Promise.all([
+      PlayerEntity.findByIdAndUpdate(friendId, { $pull: { friends: this.player.id } }),
+      PlayerEntity.findByIdAndUpdate(this.player.id, { $pull: { friends: friendId } })
+    ])
+      .then(() => ({ message: 'Player has beed removed from your friends list' }))
+      .catch(databaseErrorHandling)
   }
 }

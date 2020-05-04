@@ -1,3 +1,1 @@
-**.env** should contain the following keys:
-
-- PORT: port number for server
+Needed environment variables for **.env** are listed in *./src/config*
