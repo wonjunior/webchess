@@ -1979,7 +1979,7 @@ export default function AbChess(abId, abOptions) {
             board.movePiece(move, animate);
             board.updateHighlighting();
             if (typeof events.onMovePlayed === "function") {
-                events.onMovePlayed();
+                events.onMovePlayed(move);
             }
         };
 

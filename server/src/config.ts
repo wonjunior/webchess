@@ -7,5 +7,6 @@ export const {
   MONGO_CONNECTION_STRING,
   OKTA_ISSUER,
   OKTA_CLIENT_ID,
-  OKTA_EXPECTED_AUDIENCE
+  OKTA_EXPECTED_AUDIENCE,
+  CHESS_API_ROOT
 } = <{ [key: string]: string }>process.env
