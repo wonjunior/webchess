@@ -40,7 +40,7 @@ export default class App extends Vue {
 
   async created() {
     const token = await this.$auth.getAccessToken()
-    console.log(await new Ajax(token).get('auth'))
+    console.log(await new Ajax(token).get('player'))
   }
 
   addPlayer(player: Player) {
