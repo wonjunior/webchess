@@ -2,12 +2,10 @@ import { Application } from 'express';
 import OktaJwtVerifier from '@okta/jwt-verifier';
 
 import { PlayerService } from './services/player.service';
-import { GameController } from './game';
 
 export class Controller {
   private playerService: PlayerService;
   private jwtVerifier: any;
-  private game = new GameController();
 
   constructor(private app: Application) {
     this.playerService = new PlayerService();
@@ -48,8 +46,6 @@ export class Controller {
     this.app.route('/').get(this.playerService.welcomeMessage);
 
     this.app.route('/auth').get(this.authRequired.bind(this), (req, res) => { res.json({m:'yes'}) });
-
-    this.app.route('/game/create/:id').get(this.game.create);
 
     this.app.route('/players').get(this.playerService.getAllPlayers);
     this.app.route('/player').post(this.playerService.addNewPlayer);
