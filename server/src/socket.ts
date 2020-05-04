@@ -1,5 +1,19 @@
 import { Server, Socket } from "socket.io";
 import uuid from "uuid/v4";
+import OktaJwtVerifier from "@okta/jwt-verifier";
+import okta from "@okta/okta-sdk-nodejs";
+
+/*
+const jwtVerifier = new OktaJwtVerifier({
+  clientId: process.env.OKTA_CLIENT_ID,
+  issuer: `${process.env.OKTA_ORG_URL}/oauth2/default`,
+});
+
+const oktaClient = new okta.Client({
+  orgUrl: process.env.OKTA_ORG_URL,
+  token: process.env.OKTA_TOKEN,
+});
+*/
 
 const messageExpirationTimeMS = 10 * 1000;
 
@@ -25,8 +39,11 @@ const sendMessage = (socket: Socket | Server) =>
 
 export default (io: Server) => {
   const messages: Set<IMessage> = new Set();
+  
 
+  //serveur de messagerie
   io.on("connection", (socket) => {
+
     socket.on("getMessages", () => {
       messages.forEach(sendMessage(socket));
     });
