@@ -45,14 +45,27 @@ export class Game {
     }
   
     async onMoveReceived(move: Move, color: string) {
+
+      if (this.turn != color) return
   
       if(!(await this.playMove(move, color))) return
+
+      this.checkGameOver()
   
       if (this.turn == 'b') 
         this.socketBlack.emit('yourTurn', this.state)
       else
         this.socketWhite.emit('yourTurn', this.state)
     
+    }
+
+    async checkGameOver() {
+      const res = await ajax.post('check', { game_id: this.id })
+      if (res.game_over_status) {
+        this.socketBlack.emit('gameover', {})
+        this.socketWhite.emit('gameover', {})
+      }
+
     }
   
     //here we trust API
