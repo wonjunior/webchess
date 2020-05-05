@@ -29,8 +29,8 @@ class App {
     this.app.use(bodyParser.json({ limit: '50mb' }))
     this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
     this.app.use(cors())
-    this.app.use(this.authenticator.call.bind(this.authenticator))
-    this.app.use(this.playerResolver.call.bind(this.playerResolver))
+    this.app.use(this.authenticator.middleware.bind(this.authenticator))
+    this.app.use(this.playerResolver.middleware.bind(this.playerResolver))
   }
 
   private setMongoConfig() {

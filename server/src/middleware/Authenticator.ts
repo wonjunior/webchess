@@ -1,13 +1,12 @@
 import OktaJwtVerifier from '@okta/jwt-verifier'
 import { Request, Response, NextFunction } from 'express'
 
-import { WebChessError } from './Helpers'
+import { WebChessError, oktaErrorHandling } from './Helpers'
 import { OKTA_ISSUER, OKTA_CLIENT_ID, OKTA_EXPECTED_AUDIENCE } from '../config'
 
 /**
- * Middleware used to verify the request's JWT. If the operation is
- * successful the player's id is stored inside the Request object
- * and the next middleware function is called
+ * Middleware used to verify the request's JWT. If the user is
+ * authenticated, its email address is returned.
  */
 export default class Authenticator {
   jwtVerifier: any
@@ -19,25 +18,35 @@ export default class Authenticator {
     })
   }
 
-  async call(req: Request, res: Response, next: NextFunction) {
-    const authHeader = req.headers.authorization || ''
-    const match = authHeader.match(/Bearer (.+)/)
-
-    if (!match) return res.json({ error: 'Request made without a JWT token' })
-
-    const accessToken = match[1]
-
-    const response = await this.jwtVerifier
-      .verifyAccessToken(accessToken, OKTA_EXPECTED_AUDIENCE)
-      .then((jwt: any) => jwt.claims.sub)
-      .catch((error: any) => {
-        console.error('[Okta error]' + error.message)
-        return { error: 'Authentication failed, token not valid' }
-      })
+  /**
+   * Used in Express' middleware pipeline
+   * Verifies the request's authorization header
+   * If the operation is successful the player's id is stored inside the
+   * Request object and the next middleware function is called
+   */
+  async middleware(req: Request, res: Response, next: NextFunction): Promise<void | Response<any>> {
+    const response = await this.verify(req.headers.authorization)
 
     if ((response as WebChessError).error) return res.json(response)
 
     req.email = response as string
     next()
+  }
+
+  /**
+   * Verifies the provided authorization string
+   * @param authorization the request's authorization string
+   */
+  async verify(authorization = ''): Promise<string | WebChessError>  {
+    const match = authorization.match(/Bearer (.+)/)
+
+    if (!match) return { error: 'Request made without a JWT token' }
+
+    const accessToken = match[1]
+
+    return await this.jwtVerifier
+      .verifyAccessToken(accessToken, OKTA_EXPECTED_AUDIENCE)
+      .then((jwt: any) => jwt.claims.sub)
+      .catch(oktaErrorHandling)
   }
 }
