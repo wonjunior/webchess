@@ -1,4 +1,8 @@
-## Project idea: 
+## Screencast:
+
+- Mid term screencast: https://drive.google.com/open?id=1mwGlG66e5qJCH__R6gG6FPdLgwPVPN0Y
+
+## Project idea:
 
 Online chess platform. Connect, play against other users, watch replays of your games as well as famous chess games, track progress on leaderboard.
 
@@ -16,18 +20,18 @@ Online chess platform. Connect, play against other users, watch replays of your 
 ## Server side: Node.js with following frameworks/services:
 
 - Express.js
-- Okta authentification (https://developer.okta.com/quickstart/#/vue/nodejs/express) 
+- Okta authentification (https://developer.okta.com/quickstart/#/vue/nodejs/express)
 - Socket.io (https://socket.io/docs/server-api/)
 - Chess REST API to track a game's progress and validate moves (https://github.com/anzemur/chess-api)
 - Mongo DB (http://mongodb.github.io/node-mongodb-native/3.4/quick-start/quick-start/)
 
-## Client side: 
+## Client side:
 
 - Vue.js with Typescript
 - Socket.io integration for Vue.js (https://www.npmjs.com/package/vue-socket.io)
 - Chess API to view chess board and play moves (https://nimzozo.github.io/Ab-Chess/)
 
-## Other : 
+## Other :
 
 - Testing will be done using Jest
 - To replay famous games we can scrape data from a online dataset: https://www.chessgames.com
