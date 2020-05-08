@@ -1,7 +1,5 @@
 import { Request, Response } from "express";
-import { Types, MongooseDocument, Query } from "mongoose";
 
-import { PlayerEntity } from "../schemas/player.schema";
 import { PlayerModel } from "../models/player.model"
 
 export class PlayerController {
