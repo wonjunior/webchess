@@ -10,11 +10,9 @@
     </div> -->
     <div>
       <button class="menu-item" v-if="authenticated" v-on:click="logout" id="logout-button"> Logout </button>
-      <!-- <button class="menu-item" v-if="authenticated" v-on:click="getInfo"> Get User Info </button>
-      <button class="menu-item" v-if="authenticated" v-on:click="getToken"> Get Token </button> -->
       <button class="menu-item" v-else v-on:click="$auth.loginRedirect()" id="login-button"> Login </button>
     </div>
-    <router-view/>
+    <router-view :authenticated="authenticated" />
   </div>
 </template>
 

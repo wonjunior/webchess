@@ -1,5 +1,5 @@
 <template>
-  <div class="home">
+  <div v-if="authenticated" class="home">
     <h2>Welcome back {{name}}</h2>
     <div class="body">
       <div class="side">
@@ -14,7 +14,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import { Component, Vue, Prop } from 'vue-property-decorator'
 
 import Friendslist from '@/components/FriendsList.vue'
 import SearchPlayer from '@/components/SearchPlayer.vue'
@@ -27,20 +27,23 @@ import Ajax from '../utils/Ajax'
   components: { Friendslist, SearchPlayer, PlayerStats }
 })
 export default class App extends Vue {
-  name = 'Jean-Claude Van Damme'
-  friends = [
-    { id: 'fkjzenf5161qfq65', name: 'Lucas', elo: 100 },
-    { id: 'fkznfezj6545zf4zef', name: 'Sophie', elo: 203 },
-    { id: '5fd4zf1efez31zeff', name: 'Ronan', elo: 50 }
-  ]
-  wins = 20
-  losses = 10
-  elo = 410
-  previousElo = [ 510, 505, 515, 526, 540, 437, 416, 700, 500 ]
+  @Prop() authenticated: boolean
+  name = ""
+  friends = [] as Player[]
+  wins = 0
+  losses = 0
+  elo = 1500
+  previousElo = []
 
   async created() {
     const token = await this.$auth.getAccessToken()
-    console.log(await new Ajax(token).get('player'))
+    const player = await new Ajax(token).get('player')
+    this.name = player.name || this.name
+    this.elo = player.elo || this.elo
+    this.wins = player.wins || this.wins
+    this.losses = player.losses || this.losses
+    this.previousElo = player.previous_elo || this.previousElo
+    this.friends = await new Ajax(token).get('friends')
   }
 
   addPlayer(player: Player) {
