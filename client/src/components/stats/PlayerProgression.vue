@@ -20,7 +20,7 @@ export default class PlayerProgression extends Vue {
   viewBoxHeight = 100
 
   get averageElo(): number {
-    return Math.round(this.elos.reduce((a,b) => a+b) / (this.elos.length || 1))
+    return Math.round(this.elos.reduce((a,b) => a+b, 0) / (this.elos.length || 1))
   }
 
   svgPreviousElo() {
