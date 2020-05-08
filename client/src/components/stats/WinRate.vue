@@ -17,7 +17,7 @@ export default class WinRate extends Vue {
   @Prop(Number) losses: number
 
   get winRate(): number {
-    return this.wins / (this.losses + this.wins) * 100
+    return (this.wins / (this.losses + this.wins) * 100) || 50
   }
 }
 
