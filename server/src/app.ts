@@ -4,15 +4,13 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 
 import { MONGO_CONNECTION_STRING } from './config'
-import { Controller } from './controllers/main.controller'
-import PlayerResolver from './middleware/PlayerResolver'
+import { Router } from './router/main.router'
 import Authenticator from './middleware/Authenticator'
 
 class App {
   public app: Application;
-  public controller: Controller
+  public router: Router
   private authenticator = new Authenticator()
-  private playerResolver = new PlayerResolver()
 
   constructor() {
     this.app = express()
@@ -21,8 +19,7 @@ class App {
     this.setConfig()
     this.setMongoConfig()
 
-    // assign main controller to handle routes
-    this.controller = new Controller(this.app)
+    this.router = new Router(this.app)
   }
 
   private setConfig() {
@@ -30,7 +27,6 @@ class App {
     this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
     this.app.use(cors())
     this.app.use(this.authenticator.middleware.bind(this.authenticator))
-    this.app.use(this.playerResolver.middleware.bind(this.playerResolver))
   }
 
   private setMongoConfig() {
