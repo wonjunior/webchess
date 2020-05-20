@@ -27,14 +27,14 @@ export default class Ajax {
   /**
    * POST request to endpoint
    */
-  post(endpoint: string, data: Record<string, any>) {
+  post(endpoint: string, data: Record<string, unknown>) {
     return this.request(HTTPMethod.POST, endpoint, data)
   }
 
   /**
    * PUT request to endpoint
    */
-  put(endpoint: string, data: Record<string, any>) {
+  put(endpoint: string, data: Record<string, unknown>) {
     return this.request(HTTPMethod.PUT, endpoint, data)
   }
 
@@ -45,7 +45,7 @@ export default class Ajax {
     return this.request(HTTPMethod.DELETE, endpoint)
   }
 
-  private async request(method: HTTPMethod, url: string, data: Record<string, any> | null = null) {
+  private async request(method: HTTPMethod, url: string, data: Record<string, unknown> | null = null) {
 
     const response = await fetch(this.root + url, {
       method,
