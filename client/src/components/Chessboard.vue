@@ -13,7 +13,7 @@ export default class Chessboard extends Vue {
   // eslint-disable-next-line
   private board: any
   message = ""
-  socket = io("http://localhost:9001", { query: {gameId: prompt("Entrez le num de la partie") }})
+  socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: {gameId: prompt("Entrez le num de la partie") }})
 
 
   mounted() {
