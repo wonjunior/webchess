@@ -1,7 +1,7 @@
 <template>
   <div class="search-player">
     <div class="search-player-header">Search player</div>
-    <div class="search-box"><input v-model="task" class="find-input" type="text" /><button v-on:click="searchPlayer" class="find-button">Find</button></div>
+    <div class="search-box"><input v-model="input" class="find-input" type="text" /><button v-on:click="searchPlayer" class="find-button">Find</button></div>
     <ul v-for="player in players" :key="player.id" class="search-result">
       <li class="search-result-item">
         <span class="search-result-label">{{ player.name }} <i>(elo {{ player.elo }})</i></span>
@@ -18,7 +18,7 @@ import Player from '../models/Player'
 
 @Component
 export default class SearchPlayer extends Vue {
-  task = ''
+  input = ''
   players = [] as Player[]
 
   @Emit()
@@ -31,6 +31,7 @@ export default class SearchPlayer extends Vue {
 
   async searchPlayer() {
     // <AJAX> GET to /search with input as param
+    console.log(this.input)
     const result = await (() => [{ id: 'f5z4gz6z8v4v12z', name: 'Jean', elo: 100 }, { id: 'd5eg8ze1ze3zef8', name: 'Jeanne', elo: 350 }, { id: 'sg45g1d2czs1e', name: 'Jeannot', elo: 340 }])()
     this.players = result
   }

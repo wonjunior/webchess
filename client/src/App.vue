@@ -9,10 +9,13 @@
       <router-link to="/about">About</router-link>
     </div> -->
     <div>
+      <button class="menu-item"><router-link to="/">Home</router-link></button>
       <button class="menu-item" v-if="authenticated" v-on:click="logout" id="logout-button"> Logout </button>
       <button class="menu-item" v-else v-on:click="$auth.loginRedirect()" id="login-button"> Login </button>
     </div>
-    <router-view :authenticated="authenticated" />
+    <div class="home">
+      <router-view :authenticated="authenticated" />
+    </div>
   </div>
 </template>
 
@@ -55,14 +58,28 @@ export default class App extends Vue {
 * {
   box-sizing: border-box;
 }
+a {
+  text-decoration: none;
+  color: black;
+}
+.home {
+  width: 50%;
+  margin: 20px auto;
+}
+.body, .home h2 {
+  font-family: 'Libre Baskerville', serif;
+}
+.body > * {
+  display: inline-block
+}
 .header {
   width: 330px;
   margin: auto;
   color: #27242b;
   border-bottom: 2px solid #27242b;
   margin-bottom: 10px;
-  pointer-events: none;
   user-select: none;
+  cursor: pointer;
 }
 .header-text {
   margin: 0;

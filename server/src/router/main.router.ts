@@ -1,15 +1,16 @@
 import { Application } from 'express'
 
 import { PlayerController } from '../controllers/player.controller'
+import { GameController } from '../controllers/game.controller'
 
 import PlayerResolver from '../middleware/PlayerResolver'
 
 export class Router {
-  private playerController: PlayerController
+  private playerController = new PlayerController
+  private gameController = new GameController()
   private playerResolver = new PlayerResolver()
 
   constructor(private app: Application) {
-    this.playerController = new PlayerController()
     this.routes()
   }
 
@@ -17,8 +18,8 @@ export class Router {
     this.app.route('/players').get(this.playerController.getAllPlayers)
     this.app.route('/player').post(this.playerController.createPlayer)
 
-
-    // Beyond this point, all controllers will have access to `req.player`
+    // Beyond this point, all controllers will have access to the player through the Request
+    // e.g. for `req: Request`, the current logged in player is `req.player`
     this.addPlayerResolver()
 
     this.app.route('/player').get(this.playerController.getPlayer)
@@ -28,6 +29,9 @@ export class Router {
     this.app.route('/friend/:id').put(this.playerController.addFriend)
     this.app.route('/friend/:id').delete(this.playerController.deleteFriend)
     this.app.route('/friends').get(this.playerController.getFriends)
+
+    // games
+    this.app.route('/game/save').put(this.gameController.saveGame)
   }
 
   /**

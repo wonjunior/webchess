@@ -28,6 +28,7 @@ export class PlayerModel {
       elo: 1500,
       previous_elo: [1500],
       current_game: {},
+      games: [],
       friends: [],
     })
 
@@ -45,7 +46,7 @@ export class PlayerModel {
 
   async delete(email: string) {
     return await PlayerEntity
-      .findOneAndDelete({ email })
+      .findOneAndDelete({ email }) // KEK
       .catch(databaseErrorHandling)
   }
 
@@ -74,6 +75,14 @@ export class PlayerModel {
       PlayerEntity.findByIdAndUpdate(this.player.id, { $pull: { friends: friendId } })
     ])
       .then(() => ({ message: 'Player has beed removed from your friends list' }))
+      .catch(databaseErrorHandling)
+  }
+
+  async archiveGame(white: {name: string, id: string}, black: {name: string, id: string}, pgn: string, result: string) {
+    return await PlayerEntity
+      .findByIdAndUpdate(this.player.id, {
+        $addToSet: { games: { white, black, pgn, date: new Date(), result } }
+      })
       .catch(databaseErrorHandling)
   }
 }

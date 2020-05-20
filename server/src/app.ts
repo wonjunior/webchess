@@ -33,6 +33,7 @@ class App {
     mongoose.connect(MONGO_CONNECTION_STRING, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      useFindAndModify: false,
     })
   }
 }
