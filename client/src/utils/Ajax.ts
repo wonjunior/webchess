@@ -2,6 +2,7 @@ enum HTTPMethod {
   GET = 'get',
   POST = 'post',
   PUT = 'put',
+  PATCH = 'patch',
   DELETE = 'delete'
 }
 
@@ -27,14 +28,21 @@ export default class Ajax {
   /**
    * POST request to endpoint
    */
-  post(endpoint: string, data: Record<string, unknown>) {
+  post(endpoint: string, data = {} as Record<string, unknown>) {
     return this.request(HTTPMethod.POST, endpoint, data)
+  }
+
+  /**
+   * PATCH request to endpoint
+   */
+  patch(endpoint: string, data = {} as Record<string, unknown>) {
+    return this.request(HTTPMethod.PATCH, endpoint, data)
   }
 
   /**
    * PUT request to endpoint
    */
-  put(endpoint: string, data: Record<string, unknown>) {
+  put(endpoint: string, data = {} as Record<string, unknown>) {
     return this.request(HTTPMethod.PUT, endpoint, data)
   }
 
