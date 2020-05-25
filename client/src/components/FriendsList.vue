@@ -29,7 +29,7 @@ ul.friend-list {
   border-radius: 5px;
   padding: 20px;
   padding-bottom: 15px;
-  font-size: 20px;
+  font-size: 18px;
   list-style-type: none;
 }
 
@@ -51,7 +51,7 @@ ul.friend-list {
 }
 
 .friend img {
-  width: 20px;
+  width: 18px;
   margin-right: 5px;
 }
 

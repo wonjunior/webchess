@@ -8,6 +8,10 @@ export class PlayerController {
     res.json(await PlayerModel.all())
   }
 
+  public async searchPlayers(req: Request, res: Response) {
+    res.json(await new PlayerModel(req.player).search(req.params.input))
+  }
+
   public async getPlayer(req: Request, res: Response) {
     res.json(req.player)
   }

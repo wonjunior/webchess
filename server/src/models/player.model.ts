@@ -21,8 +21,8 @@ export class PlayerModel {
     if (!name) return { error: 'Provided name is not valid' }
 
     const player = new PlayerEntity({
-      name: name,
-      email: email,
+      name,
+      email,
       wins: 0,
       losses: 0,
       elo: 1500,
@@ -41,6 +41,25 @@ export class PlayerModel {
     PlayerEntity
       .findOneAndUpdate({ email }, { name })
       .then(() => ({ message: 'Player updated successfully' }))
+      .catch(databaseErrorHandling)
+  }
+
+  /**
+   * Returns all players which validate both points:
+   * (a) are not friends with `this.player`
+   * (b) match the input string
+   * @param input the search input
+   */
+  async search(input: string) {
+    if (!input) return { error: 'The input is empty' }
+
+    return await PlayerEntity
+      .find({ $text: { $search: input } })
+      .then((players: Player[]) => {
+        return players
+          .filter(({ _id }) => !this.player.friends.includes(_id))
+          .map(({ _id, name, elo }) => ({ id: _id, name, elo }))
+      })
       .catch(databaseErrorHandling)
   }
 

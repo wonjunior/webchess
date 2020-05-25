@@ -12,28 +12,34 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Emit } from 'vue-property-decorator'
+import { Component, Vue, Emit, Prop } from 'vue-property-decorator'
 
 import Player from '../models/Player'
+import Ajax from '../utils/Ajax'
 
 @Component
 export default class SearchPlayer extends Vue {
+  @Prop() ajax: Ajax
+
   input = ''
   players = [] as Player[]
 
   @Emit()
   async addPlayer(player: Player) {
-    // <AJAX> PUT /friend/:id -> if response is true then return player to parent
-    const i = this.players.indexOf(player)
-    if (~i) this.players = this.players.splice(i, 0)
+    const response = await this.ajax.post(`friend/${player.id}`)
+    if (response.error) return console.error(response.error)
+
+    this.players = []
     return player
   }
 
   async searchPlayer() {
-    // <AJAX> GET to /search with input as param
-    console.log(this.input)
-    const result = await (() => [{ id: 'f5z4gz6z8v4v12z', name: 'Jean', elo: 100 }, { id: 'd5eg8ze1ze3zef8', name: 'Jeanne', elo: 350 }, { id: 'sg45g1d2czs1e', name: 'Jeannot', elo: 340 }])()
-    this.players = result
+    if (!this.input) return null
+
+    const response = await this.ajax.get(`player/search/${this.input}`)
+    if (response.error) return console.error(response.error)
+
+    this.players = response
   }
 }
 
@@ -83,6 +89,7 @@ ul.search-result {
   text-align: center;
   padding: 0;
   margin: 0;
+  cursor: pointer;
 }
 .search-result-label {
   vertical-align: middle;

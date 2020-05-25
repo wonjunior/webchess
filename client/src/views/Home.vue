@@ -4,7 +4,7 @@
     <div class="body">
       <div class="side">
         <Friendslist :friends="friends" />
-        <SearchPlayer @add-player="addPlayer" />
+        <SearchPlayer @add-player="addPlayer" :ajax="ajax" />
         <GamesList :playerId="id" :games="games" />
       </div>
       <div class="main">
@@ -32,6 +32,7 @@ import Ajax from '../utils/Ajax'
 export default class Home extends Vue {
   @Prop() authenticated: boolean
 
+  ajax = null as Ajax | null
   id = ""
   name = ""
   friends = [] as Player[]
@@ -43,8 +44,9 @@ export default class Home extends Vue {
 
   async created() {
     const token = await this.$auth.getAccessToken()
+    this.ajax = new Ajax(token)
 
-    const player = await new Ajax(token).get('player')
+    const player = await this.ajax.get('player')
     console.log(player)
     this.id = player._id
     this.name = player.name || this.name
@@ -53,7 +55,7 @@ export default class Home extends Vue {
     this.losses = player.losses || this.losses
     this.previousElo = player.previous_elo || this.previousElo
     this.games = player.games || this.games
-    this.friends = await new Ajax(token).get('friends')
+    this.friends = await this.ajax.get('friends')
 
     // console.log(await new Ajax(token).put('game/save', {
     //   white: {name: 'Jean', id: '5eadaee8ca2ddc0894ae3907' },
