@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
 // Typescript type declaration for Player
 export interface Player extends mongoose.Document {
@@ -25,7 +25,7 @@ export interface Player extends mongoose.Document {
 
 // MongoDB declaration for a Player document
 const PlayerSchema = new mongoose.Schema({
-  name: String,
+  name: { type: String, text: true },   // allows indexing
   email: String,
   wins: Number,
   losses: Number,
@@ -44,6 +44,9 @@ const PlayerSchema = new mongoose.Schema({
     result: String,
   }],
   friends: [String],
-});
+})
 
-export const PlayerEntity = mongoose.model<Player>("Player", PlayerSchema);
+PlayerSchema.index({ name: 'text' })
+
+
+export const PlayerEntity = mongoose.model<Player>("Player", PlayerSchema)
