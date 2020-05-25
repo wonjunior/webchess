@@ -18,17 +18,18 @@ export class Router {
     this.app.route('/players').get(this.playerController.getAllPlayers)
     this.app.route('/player').post(this.playerController.createPlayer)
 
-    // Beyond this point, all controllers will have access to the player through the Request
-    // e.g. for `req: Request`, the current logged in player is `req.player`
+    // Beyond this point, all controllers will have access to the player through Request#player
     this.addPlayerResolver()
 
-    this.app.route('/player').get(this.playerController.getPlayer)
-    this.app.route("/player/:id").delete(this.playerController.deletePlayer)
-    this.app.route('/player/:id').put(this.playerController.updatePlayer)
+    this.app.route('/player/search/:input').get(this.playerController.searchPlayers)
 
-    this.app.route('/friend/:id').put(this.playerController.addFriend)
-    this.app.route('/friend/:id').delete(this.playerController.deleteFriend)
+    this.app.route('/player').get(this.playerController.getPlayer)
+    this.app.route('/player/:id').patch(this.playerController.updatePlayer)
+    this.app.route("/player/:id").delete(this.playerController.deletePlayer)
+
     this.app.route('/friends').get(this.playerController.getFriends)
+    this.app.route('/friend/:id').post(this.playerController.addFriend)
+    this.app.route('/friend/:id').delete(this.playerController.deleteFriend)
 
     // games
     this.app.route('/game/save').put(this.gameController.saveGame)
