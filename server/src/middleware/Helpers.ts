@@ -1,9 +1,14 @@
 import { Request } from 'express'
+import { Socket } from 'socket.io'
 
 import { Player } from '../schemas/player.schema'
 
 export interface WebChessError {
   error: string
+}
+
+export interface WebChessSocket extends Socket {
+  game: string;
 }
 
 export function databaseErrorHandling(error: any) {
