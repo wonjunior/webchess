@@ -17,8 +17,12 @@ export default class Chessboard extends Vue {
 
 
   mounted() {
-    this.socket.on('yourTurn', (state: any) => {
-      console.log('My turn !')
+    this.socket.on('yourTurn', (state: string) => {
+      console.log('My turn!', state)
+      this.board.setFEN(state)
+    })
+    this.socket.on('invalidate', (state: string) => {
+      console.log('Invalid move! reseting to ', state)
       this.board.setFEN(state)
     })
     this.board = new AbChess(this.$el.id, { animated: false })

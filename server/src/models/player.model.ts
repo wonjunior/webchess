@@ -1,8 +1,7 @@
-import { Types, MongooseDocument } from 'mongoose'
+// import { Types, MongooseDocument } from 'mongoose'
 
 import { PlayerEntity, Player } from '../schemas/player.schema'
 import { databaseErrorHandling } from '../middleware/Helpers'
-import { response } from 'express'
 
 export class PlayerModel {
   player: Player

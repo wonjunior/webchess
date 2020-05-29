@@ -1,7 +1,8 @@
-import { Socket } from "socket.io";
-import Ajax from "../utils/Ajax";
 import { WebChessSocket } from '../middleware/Helpers'
-import { CHESS_API_ROOT } from '../config'
+
+import PlayerController from '../controllers/socket/player.controller'
+import GameModel from '../models/game.model'
+
 
 interface Move {
   from: string;
@@ -14,6 +15,9 @@ enum Color {
 enum ChessApiStatus {
   MOVED = 'figure moved',
   STARTED = 'new game started',
+}
+enum FEN {
+  INITIAL = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
 }
 
 // responses string codes from Chess API
@@ -31,98 +35,85 @@ namespace ChessAPI {
     CONTINUE = 'game continues',
   }
 }
-
-enum SocketMessage {
-  MOVE = 'move',
-  YOURTURN = 'yourTurn',
-  ENDGAME = 'gameover',
-}
-
-enum FEN {
-  RESET = 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1'
-}
-
-const EmptySocket = {} as Socket
+const defaultPlayer = {} as PlayerController
 
 export class Game {
-  static chessAPI = new Ajax(CHESS_API_ROOT)
+  static model = new GameModel()
 
-  private socketWhite = EmptySocket
-  private socketBlack = EmptySocket
-  private current = Color.WHITE
-  private state = FEN.RESET
+  private white = defaultPlayer
+  private black = defaultPlayer
+  private current = defaultPlayer
+  private state = FEN.INITIAL
 
-  public id = ''
+  // GameModel owns the game's id
+  get id() { return Game.model.id }
+  set id(id: string) { Game.model.id = id }
 
   async create(socket: WebChessSocket) {
-    this.socketWhite = socket
-    const { status, game_id } = await Game.chessAPI.get()
+    this.white = new PlayerController(socket, Color.WHITE)
+    const { status } = await Game.model.create()
 
     if (status != ChessAPI.Status.STARTED) return console.error('[Chess API] Game creation failed')
 
-    this.id = game_id
+    console.info(`[${this.id}] player created game`)
   }
 
   join(socket: WebChessSocket): boolean {
-    if (this.socketWhite == EmptySocket) return false
+    if (this.white == defaultPlayer) return false
 
-    this.socketBlack = socket
+    this.black = new PlayerController(socket, Color.BLACK)
     console.info(`[${this.id}] second player joined game`)
 
-    this.watchMoves()
+    // setup receptors on both sockets
+    this.black.receiveMove(this.onMoveReceived.bind(this))
+    this.white.receiveMove(this.onMoveReceived.bind(this))
 
-    this.turnIs(Color.WHITE)
+    this.current = this.white
+    this.current.giveTurn(this.state)
 
     return true
   }
 
-  turnIs(color: Color) {
-    switch (color) {
-      case Color.WHITE: return this.socketWhite.emit(SocketMessage.YOURTURN, this.state)
-      case Color.BLACK: return this.socketBlack.emit(SocketMessage.YOURTURN, this.state)
+  async onMoveReceived(sender: PlayerController, move: Move) {
+    console.info(`[${this.id}] move -> sender: ${sender.color} current: ${this.current.color}`)
+
+    // we copy the current player to make sure it is not
+    // overridden by a concurrent call by the opponent
+    const current = this.current
+
+    if (sender.color != current.color || !(await this.play(current, move)))
+    {
+      console.log('invalidating move from ', sender.color)
+      return sender.invalidateMove(this.state)
     }
+
+    if (await this.isGameOver())
+      return this.endGame()
+
+    this.current.giveTurn(this.state)
   }
 
-  watchMoves() {
-    this.socketBlack.on(SocketMessage.MOVE,  move => this.onMoveReceived(move, Color.BLACK))
-    this.socketWhite.on(SocketMessage.MOVE, move => this.onMoveReceived(move, Color.WHITE))
-  }
-
-  async onMoveReceived(move: Move, color: Color) {
-    console.info(`[${this.id}] received move from ${color}`)
-
-    if (color != this.current) return null
-
-    if (!(await this.play(move))) return null
-
-    if (await this.checkGameOver()) return null
-
-    this.turnIs(this.current)
-  }
-
-  async checkGameOver(): Promise<boolean> {
-    const { status } = await Game.chessAPI.post('check', { game_id: this.id })
-
-    if (status == ChessAPI.Endgame.CONTINUE) return false
-
-    this.socketBlack.emit(SocketMessage.ENDGAME, {})
-    this.socketWhite.emit(SocketMessage.ENDGAME, {})
-    return true
-  }
-
-  // our source of truth is the 3rd party chess REST API
-  async play({from, to}: Move): Promise<boolean> {
-    const { status } = await Game.chessAPI.post('move', { from, to, game_id: this.id })
+  private async play(player: PlayerController, move: Move): Promise<boolean | void> {
+    console.log('playing---')
+    const { status } = await Game.model.play(move)
     if (status != ChessApiStatus.MOVED) return false
 
-    const { fen_string } = await Game.chessAPI.post('fen', { game_id: this.id })
-    if (!fen_string) {
-      console.error('[Chess API] Fetching FEN from API failed')
-      return false
-    }
+    const { fen_string } = await Game.model.getFEN()
+    // if (!pgn) return console.error('[Chess API] Fetching FEN from API failed')
 
-    this.current = (this.current == Color.WHITE) ? Color.BLACK : Color.WHITE
+    this.current = (player.color == Color.WHITE) ? this.black : this.white
     this.state = fen_string
+
     return true
+  }
+
+  private async isGameOver(): Promise<boolean> {
+    const { status } = await Game.model.gameState()
+    return status != ChessAPI.Endgame.CONTINUE
+  }
+
+  private endGame() {
+    this.white.endGame()
+    this.black.endGame()
   }
 }
