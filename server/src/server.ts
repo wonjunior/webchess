@@ -1,13 +1,13 @@
-import http from 'http'
-import SocketIOServer from 'socket.io'
-import initializeSocketIO from './socket'
-
 import app from './app'
+import { Server } from 'http'
+
+import WebSocketServer from './socket'
 import { PORT } from './config'
 
-const server = new http.Server(app)
-const io = SocketIOServer(server)
+const server = new Server(app)
 
-initializeSocketIO(io)
-
+// launch HTTP server
 server.listen(PORT, () => console.info(`server started at http://localhost:${PORT}`));
+
+// launch Websockets
+new WebSocketServer(server).listen()

@@ -5,8 +5,8 @@ import { GameController } from '../controllers/game.controller'
 
 import PlayerResolver from '../middleware/PlayerResolver'
 
-export class Router {
-  private playerController = new PlayerController
+export default class Router {
+  private playerController = new PlayerController()
   private gameController = new GameController()
   private playerResolver = new PlayerResolver()
 

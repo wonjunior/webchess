@@ -4,12 +4,11 @@ import cors from 'cors'
 import mongoose from 'mongoose'
 
 import { MONGO_CONNECTION_STRING } from './config'
-import { Router } from './router/main.router'
+import Router from './router/main.router'
 import Authenticator from './middleware/Authenticator'
 
 class App {
-  public app: Application;
-  public router: Router
+  public app: Application
   private authenticator = new Authenticator()
 
   constructor() {
@@ -19,7 +18,7 @@ class App {
     this.setConfig()
     this.setMongoConfig()
 
-    this.router = new Router(this.app)
+    new Router(this.app)
   }
 
   private setConfig() {
