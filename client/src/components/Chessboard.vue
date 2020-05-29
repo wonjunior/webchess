@@ -15,18 +15,22 @@ export default class Chessboard extends Vue {
   message = ""
   socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: {gameId: prompt("Entrez le num de la partie") }})
 
-
   mounted() {
+    this.setBoard()
     this.socket.on('yourTurn', (state: string) => {
       console.log('My turn!', state)
       this.board.setFEN(state)
     })
     this.socket.on('invalidate', (state: string) => {
       console.log('Invalid move! reseting to ', state)
-      this.board.setFEN(state)
+      this.setBoard(state)
     })
+  }
+
+  setBoard(state = '') {
+    this.$el.innerHTML = '';
     this.board = new AbChess(this.$el.id, { animated: false })
-    this.board.setFEN()
+    state ? this.board.setFEN(state) : this.board.setFEN()
     this.board.onMovePlayed((move: any) => {
       this.socket.emit("move", { from: move.start, to: move.end});
     })
