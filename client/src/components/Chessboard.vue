@@ -19,11 +19,10 @@ export default class Chessboard extends Vue {
   socket: any
 
   async mounted() {
-    const token = await this.$auth.getAccessToken()
-    console.log(this.token)
-    const gameId = prompt("Entrez le num de la partie")
-    this.socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: {gameId, token: 'Bearer ' + token }})
-
+    this.token = await this.$auth.getAccessToken()
+    console.log("created token: " + this.token)
+    const gameId = prompt("game id")
+    this.socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: {gameId, token: 'Bearer ' + this.token }})
     this.setBoard()
     this.socket.on('yourTurn', (state: string) => {
       console.log('My turn!', state)
