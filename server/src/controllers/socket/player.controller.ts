@@ -33,6 +33,9 @@ export default class PlayerController {
   public endGame() {
     this.socket.emit(SocketMessage.ENDGAME, {})
   }
+  public getPlayer() {
+    return this.socket.player
+  }
 
   /**
    *************************************************************************************************

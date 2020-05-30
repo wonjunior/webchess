@@ -1,13 +1,12 @@
 import { Socket } from 'socket.io'
 
 import { Game } from '../../services/game'
-import { WebChessSocket } from '../../middleware/Helpers'
 
 
 export default class GameController {
   private games: Map<string, Game> = new Map()
 
-  public async create(socket: WebChessSocket) {
+  public async create(socket: Socket) {
     const game = new Game()
     await game.create(socket)
 
@@ -17,7 +16,7 @@ export default class GameController {
     socket.game = game.id
   }
 
-  public join(socket: WebChessSocket) {
+  public join(socket: Socket) {
     const id = socket.handshake.query.gameId
     const game = this.games.get(id)
     if (!game) return console.error('no game found with id', id)

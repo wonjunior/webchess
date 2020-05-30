@@ -7,10 +7,6 @@ export interface WebChessError {
   error: string
 }
 
-export interface WebChessSocket extends Socket {
-  game: string;
-}
-
 export function databaseErrorHandling(error: any) {
   console.error(error)
   return { error: 'An error occured with the database of the server' }

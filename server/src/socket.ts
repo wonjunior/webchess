@@ -2,7 +2,9 @@ import { Server } from 'http'
 import SocketIOServer from 'socket.io'
 
 import SocketRouter from './router/socket.router'
-import { WebChessSocket } from './middleware/Helpers'
+import { Socket } from 'socket.io'
+import Authenticator from './middleware/Authenticator'
+import PlayerResolver from './middleware/PlayerResolver'
 
 export interface IUser {
   id: string;
@@ -26,10 +28,14 @@ export default class WebSocketServer {
   }
 
   private setConfig() {
-    // this.io.use(async (socket, next) => {}
+    const authenticator = new Authenticator();
+    const playerResolver = new PlayerResolver();
+    this.io
+      .use(authenticator.socketMiddleware.bind(authenticator))
+      .use(playerResolver.socketMiddleware.bind(playerResolver))
   }
 
   public listen() {
-    this.io.on(WebSocketServerStatus.CONNECTION, (s: WebChessSocket) => this.router.route(s))
+    this.io.on(WebSocketServerStatus.CONNECTION, (s: Socket) => this.router.route(s))
   }
 }

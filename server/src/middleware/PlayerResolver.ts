@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express'
 
 import { WebChessError, databaseErrorHandling } from './Helpers'
 import { PlayerEntity, Player } from '../schemas/player.schema'
+import { Socket } from 'socket.io'
 
 
 export default class PlayerResolver {
@@ -20,6 +21,19 @@ export default class PlayerResolver {
     req.player = response as Player
     next()
   }
+
+  async socketMiddleware(socket: Socket, next: NextFunction) {
+    const response = await this.call(socket.email)
+
+    if ((response as WebChessError).error) {
+      console.log(response)
+      return;
+    }
+
+    socket.player = response as Player
+    return next()
+  }
+
 
   /**
    * Finds player in the database by its email

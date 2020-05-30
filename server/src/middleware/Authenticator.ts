@@ -3,6 +3,8 @@ import { Request, Response, NextFunction } from 'express'
 
 import { WebChessError, oktaErrorHandling } from './Helpers'
 import { OKTA_ISSUER, OKTA_CLIENT_ID, OKTA_EXPECTED_AUDIENCE } from '../config'
+import { Socket } from 'socket.io'
+
 
 /**
  * Middleware used to verify the request's JWT. If the user is
@@ -31,6 +33,18 @@ export default class Authenticator {
 
     req.email = response as string
     next()
+  }
+
+  async socketMiddleware(socket: Socket, next: any) {
+    const { token } = socket.handshake.query || {};
+    const response = await this.verify(token)
+    
+    if ((response as WebChessError).error) {
+      console.log(response)
+      return;
+    }
+    socket.email = response as string
+    return next()
   }
 
   /**

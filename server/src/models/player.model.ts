@@ -95,7 +95,12 @@ export class PlayerModel {
       .then(() => ({ message: 'Player has beed removed from your friends list' }))
       .catch(databaseErrorHandling)
   }
-
+  async setElo(elo: number) {
+    return await PlayerEntity
+      .findByIdAndUpdate(this.player.id, { elo })
+      .then(() => ({ message: 'Player elo has beed updated' }))
+      .catch(databaseErrorHandling)
+  }
   async archiveGame(white: {name: string, id: string}, black: {name: string, id: string}, pgn: string, result: string) {
     return await PlayerEntity
       .findByIdAndUpdate(this.player.id, {

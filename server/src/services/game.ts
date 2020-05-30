@@ -1,7 +1,9 @@
-import { WebChessSocket } from '../middleware/Helpers'
+
 
 import PlayerController from '../controllers/socket/player.controller'
+import { PlayerModel } from '../models/player.model'
 import GameModel from '../models/game.model'
+import { Socket } from 'socket.io'
 
 
 interface Move {
@@ -49,7 +51,7 @@ export class Game {
   get id() { return Game.model.id }
   set id(id: string) { Game.model.id = id }
 
-  async create(socket: WebChessSocket) {
+  async create(socket: Socket) {
     this.white = new PlayerController(socket, Color.WHITE)
     const { status } = await Game.model.create()
 
@@ -58,7 +60,7 @@ export class Game {
     console.info(`[${this.id}] player created game`)
   }
 
-  join(socket: WebChessSocket): boolean {
+  join(socket: Socket): boolean {
     if (this.white == defaultPlayer) return false
 
     this.black = new PlayerController(socket, Color.BLACK)
@@ -87,8 +89,9 @@ export class Game {
       return sender.invalidateMove(this.state)
     }
 
-    if (await this.isGameOver())
-      return this.endGame()
+    const { status } = await Game.model.gameState()
+    if (status != ChessAPI.Endgame.CONTINUE)
+      return this.endGame(status)
 
     this.current.giveTurn(this.state)
   }
@@ -107,12 +110,25 @@ export class Game {
     return true
   }
 
-  private async isGameOver(): Promise<boolean> {
-    const { status } = await Game.model.gameState()
-    return status != ChessAPI.Endgame.CONTINUE
-  }
+  private endGame(status: string) {
+    //we take the point of view of the white for calculus
+    let result = 0.5
+    const evolutionFactor = 50.0
+    if (status == ChessAPI.Endgame.CHECKMATE) {
+      if (this.current.color == Color.BLACK)
+        result = 1.0
+      else
+        result = 0.0
+    }
+    const blackElo = this.black.getPlayer().elo
+    const whiteElo = this.white.getPlayer().elo
+    const estimation = 1.0 / (1 + Math.pow(10, (blackElo - whiteElo)/400))
+    const delta_elo_white = Math.floor(evolutionFactor * (result - estimation))
+    const whiteModel = new PlayerModel(this.black.getPlayer())
+    const blackModel = new PlayerModel(this.white.getPlayer())
+    whiteModel.setElo(whiteElo + delta_elo_white)
+    blackModel.setElo(blackElo - delta_elo_white)
 
-  private endGame() {
     this.white.endGame()
     this.black.endGame()
   }

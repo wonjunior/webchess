@@ -7,15 +7,23 @@ import { Vue, Component } from 'vue-property-decorator'
 
 import AbChess from '@/assets/abchess/AbChess.js'
 import io from 'socket.io-client'
+import { Socket } from 'socket.io-client'
+
 
 @Component
 export default class Chessboard extends Vue {
   // eslint-disable-next-line
   private board: any
   message = ""
-  socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: {gameId: prompt("Entrez le num de la partie") }})
+  token = ""
+  socket: any
 
-  mounted() {
+  async mounted() {
+    const token = await this.$auth.getAccessToken()
+    console.log(this.token)
+    const gameId = prompt("Entrez le num de la partie")
+    this.socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: {gameId, token: 'Bearer ' + token }})
+
     this.setBoard()
     this.socket.on('yourTurn', (state: string) => {
       console.log('My turn!', state)

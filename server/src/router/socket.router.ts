@@ -1,12 +1,12 @@
 import { Socket } from 'socket.io'
 
 import GameController from '../controllers/socket/game.controller'
-import { WebChessSocket } from '../middleware/Helpers'
+
 
 export default class SocketRouter {
   gameController = new GameController()
 
-  public route(socket: WebChessSocket) {
+  public route(socket: Socket) {
     const query = socket.handshake.query
 
     if (!query.gameId)
