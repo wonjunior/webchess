@@ -5,20 +5,23 @@
       <div class="friend">
         <img src="https://img.icons8.com/metro/26/000000/human-head.png"/>{{ name }}
         <span class="friend-tooltip">elo {{ elo }}</span>
-        <button>invite to play</button>
+        <button v-on:click="invitePlayer(id)">invite to play</button>
       </div>
     </li>
   </ul>
 </template>
 
 <script lang="ts">
-import { Component, Vue, Prop } from 'vue-property-decorator'
+import { Component, Vue, Prop, Emit } from 'vue-property-decorator'
 
 import Player from '../models/Player'
 
 @Component
 export default class FriendsList extends Vue {
   @Prop() friends: Player[]
+
+  @Emit()
+  invitePlayer(id: string) { return id }
 }
 </script>
 

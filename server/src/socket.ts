@@ -2,7 +2,6 @@ import { Server } from 'http'
 import SocketIOServer from 'socket.io'
 
 import SocketRouter from './router/socket.router'
-import { Socket } from 'socket.io'
 import Authenticator from './middleware/Authenticator'
 import PlayerResolver from './middleware/PlayerResolver'
 
@@ -36,6 +35,6 @@ export default class WebSocketServer {
   }
 
   public listen() {
-    this.io.on(WebSocketServerStatus.CONNECTION, (s: Socket) => this.router.route(s))
+    this.io.on(WebSocketServerStatus.CONNECTION, this.router.route.bind(this.router))
   }
 }

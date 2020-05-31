@@ -4,52 +4,49 @@
       <img src="@/assets/chess.png" alt="">
       <div class="header-text"> WebChess </div>
     </div>
-    <!-- <div id="nav">
-      <router-link to="/">Home</router-link> |
-      <router-link to="/about">About</router-link>
-    </div> -->
     <div>
       <button class="menu-item"><router-link to="/">Home</router-link></button>
       <button class="menu-item" v-if="authenticated" v-on:click="logout" id="logout-button"> Logout </button>
       <button class="menu-item" v-else v-on:click="$auth.loginRedirect()" id="login-button"> Login </button>
     </div>
     <div class="home">
-      <router-view :authenticated="authenticated" />
+      <router-view :socket="socket" :ajax="ajax" :authenticated="authenticated" />
     </div>
   </div>
 </template>
 
 <script lang="ts">
-import { Component, Watch, Vue } from 'vue-property-decorator';
+import { Component, Watch, Vue } from 'vue-property-decorator'
+
+import Ajax from './utils/Ajax'
+import { WebChessSocket } from './services/WebChessSocket'
 
 @Component
 export default class App extends Vue {
-  public authenticated = false;
+  public authenticated = false
+  public ajax = null as null | Ajax
+  public socket = null as null | WebChessSocket
 
-  private created() {
-    this.isAuthenticated();
+  private async created() {
+    const authenticated = await this.$auth.isAuthenticated()
+
+    if (!authenticated) return null;
+
+    const token = await this.$auth.getAccessToken()
+
+    this.ajax = new Ajax(token)
+    this.socket = new WebChessSocket(token)
+    this.authenticated = authenticated
   }
 
-  @Watch('$route')
-  private async isAuthenticated() {
-    this.authenticated = await this.$auth.isAuthenticated()
-  }
+  // @Watch('$route')
+  // private async isAuthenticated() {}
 
   private async logout() {
     await this.$auth.logout();
 
     // Navigate back to home
     // this.$router.push({path: '/'});
-  }
-
-  private async getInfo() {
-    const user = await this.$auth.getUser()
-    console.log(user)
-  }
-
-  private async getToken() {
-    const token = await this.$auth.getAccessToken()
-    console.log(token)
   }
 }
 </script>
@@ -96,7 +93,6 @@ a {
   font-size: 16px;
   cursor: pointer;
 }
-
 
 #app {
   text-align: center;

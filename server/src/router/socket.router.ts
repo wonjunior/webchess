@@ -9,9 +9,12 @@ export default class SocketRouter {
   public route(socket: Socket) {
     const query = socket.handshake.query
 
-    if (!query.gameId)
-      this.gameController.create(socket)
-    else
-      this.gameController.join(socket)
+    socket.on('invitePlayer', id => console.log('inviting player: ', id))
+    socket.on('move', () => console.log('yeah'))
+
+    // if (!query.gameId)
+    //   this.gameController.create(socket)
+    // else
+    //   this.gameController.join(socket)
   }
 }

@@ -38,11 +38,9 @@ export default class Authenticator {
   async socketMiddleware(socket: Socket, next: any) {
     const { token } = socket.handshake.query || {};
     const response = await this.verify(token)
-    
-    if ((response as WebChessError).error) {
-      console.log(response)
-      return;
-    }
+
+    if ((response as WebChessError).error) return console.log('(socket middleware) token verificaton failed')
+
     socket.email = response as string
     return next()
   }

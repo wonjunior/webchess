@@ -4,7 +4,7 @@ import Auth from '@okta/okta-vue'
 
 import Home from '../views/Home.vue'
 import Replay from '../views/Replay.vue'
-import ChessBoard from '../components/Chessboard.vue'
+import Chessboard from '../views/Chessboard.vue'
 
 Vue.use(Auth, {
   issuer: 'https://dev-232123.okta.com/oauth2/default',
@@ -26,8 +26,8 @@ const router = new Router({
     },
     {
       path: '/play',
-      name: 'chess',
-      component: ChessBoard
+      name: 'play',
+      component: Chessboard
     },
     {
       path: '/replay',
