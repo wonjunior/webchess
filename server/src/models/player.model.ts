@@ -56,7 +56,7 @@ export class PlayerModel {
       .find({ $text: { $search: input } })
       .then((players: Player[]) => {
         return players
-          .filter(({ _id }) => !this.player.friends.includes(_id))
+          .filter(({ _id }) => this.player.id != _id && !this.player.friends.includes(_id))
           .map(({ _id, name, elo }) => ({ id: _id, name, elo }))
       })
       .catch(databaseErrorHandling)
@@ -71,6 +71,10 @@ export class PlayerModel {
   async getFriends() {
     return await PlayerEntity
       .find({ '_id': { $in: this.player.friends }})
+      .then((players: Player[]) => {
+        return players
+          .map(({ _id, name, elo }) => ({ id: _id, name, elo }))
+      })
       .catch(databaseErrorHandling)
   }
 
