@@ -8,15 +8,5 @@ export default class SocketRouter {
 
   public route(socket: Socket) {
     this.gameController.newPlayer(socket)
-
-    socket.on('invite', (opponent) => {
-      console.log('inviting player: ', opponent)
-      this.gameController.invite(socket, opponent)
-    })
-
-    socket.on('accept', (opponent) => {
-      console.log('accepting match with player: ', opponent)
-      this.gameController.acceptInvitation(socket, opponent)
-    })
   }
 }

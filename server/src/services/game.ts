@@ -115,12 +115,12 @@ export class Game {
       else
         result = 0.0
     }
-    const blackElo = this.black.getPlayer().elo
-    const whiteElo = this.white.getPlayer().elo
+    const blackElo = this.black.player.elo
+    const whiteElo = this.white.player.elo
     const estimation = 1.0 / (1 + Math.pow(10, (blackElo - whiteElo)/400))
     const delta_elo_white = Math.floor(evolutionFactor * (result - estimation))
-    const whiteModel = new PlayerModel(this.black.getPlayer())
-    const blackModel = new PlayerModel(this.white.getPlayer())
+    const whiteModel = new PlayerModel(this.black.player)
+    const blackModel = new PlayerModel(this.white.player)
     whiteModel.setElo(whiteElo + delta_elo_white)
     blackModel.setElo(blackElo - delta_elo_white)
 

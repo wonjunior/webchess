@@ -1,4 +1,5 @@
 import { Socket } from 'socket.io'
+import GameController from './game.controller'
 
 interface Move {
   from: string;
@@ -13,14 +14,18 @@ enum SocketMessage {
   YOURTURN = 'yourTurn',
   ENDGAME = 'gameover',
   INVALIDATE = 'invalidate',
-  INVITE = 'invite'
+  INVITE = 'invite',
+  JOIN = 'join',
 }
 
 export default class PlayerController {
 
   public color = Color.WHITE;
-  public disponible = true;
+  public available = true;
   public opponent = ''
+
+  get player() { return this.socket.player }
+  get id() { return this.socket.player.id }
 
   constructor(private socket: Socket) {}
 
@@ -29,9 +34,10 @@ export default class PlayerController {
    * Emitter definitions
    */
   public invite(opponent: PlayerController) {
-    this.socket.emit(SocketMessage.INVITE, opponent.socket.player)
+    const player = { id: opponent.id, name: opponent.player.name }
+    this.socket.emit(SocketMessage.INVITE, player)
   }
-  
+
   public giveTurn(state: string) {
     this.socket.emit(SocketMessage.YOURTURN, state)
   }
@@ -43,15 +49,26 @@ export default class PlayerController {
   public endGame() {
     this.socket.emit(SocketMessage.ENDGAME, {})
   }
-  public getPlayer() {
-    return this.socket.player
-  }
 
   /**
    *************************************************************************************************
-   * Recepter definitions
+   * Receptor definitions
    */
   public receiveMove(callback: (...args: any) => void) {
     this.socket.on(SocketMessage.MOVE, move => callback(this, move))
+  }
+
+  public receiveInvite(gameController: GameController) {
+    this.socket.on(SocketMessage.INVITE, (opponent: string) => {
+      console.log('inviting player: ', opponent)
+      gameController.invite(this.socket, opponent)
+    })
+  }
+
+  public receiveConfirmation(gameController: GameController) {
+    this.socket.on(SocketMessage.JOIN, (opponent: string) => {
+      console.log('accepting match with player: ', opponent)
+      gameController.acceptInvitation(this.socket, opponent)
+    })
   }
 }

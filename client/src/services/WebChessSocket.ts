@@ -3,10 +3,12 @@ import io from 'socket.io-client'
 export enum SocketEmitMessage {
   INVITE = 'invite',
   MOVE = 'move',
+  JOIN = 'join'
 }
 export enum SocketReceiveMessage {
   YOURTURN = 'yourTurn',
-  INVALIDATE = 'invalidate'
+  INVALIDATE = 'invalidate',
+  INVITATION = 'invite'
 }
 
 export class WebChessSocket {

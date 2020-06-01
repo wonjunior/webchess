@@ -12,7 +12,10 @@
           <PlayerStats :elo="elo" :wins="wins" :losses="losses" :previousElo="previousElo" />
         </div>
       </div>
-      <button v-on:click="redirectToGame">play game</button>
+      <div v-if="invitation.invited">
+        Player {{invitation.player.name}} has invited you to play!
+        <span v-on:click="joinSession" style="cursor:pointer">Join session</span>
+      </div>
     </div>
     <div v-else>
        <div style="margin:50px">
@@ -36,6 +39,11 @@ import PlayerStats from '@/components/stats/PlayerStats.vue'
 import Player from '../models/Player'
 import Game from '../models/Game'
 
+interface Invitation {
+  player: Player;
+  invited: boolean;
+}
+
 @Component({
   components: { Friendslist, SearchPlayer, GamesList, PlayerStats }
 })
@@ -53,11 +61,18 @@ export default class Home extends Vue {
   previousElo = []
   games = [] as Game[]
 
+  invitation = { invited: false } as Invitation
+
   async mounted() {
-    if (this.authenticated) this.getPlayer()
+    if (this.authenticated) this.onceAuthenticated()
   }
 
   @Watch('authenticated')
+  async onceAuthenticated() {
+    this.getPlayer()
+    this.setUpSocket()
+  }
+
   async getPlayer() {
     const player = await this.ajax.get('player')
 
@@ -71,6 +86,12 @@ export default class Home extends Vue {
     this.friends = await this.ajax.get('friends')
   }
 
+  setUpSocket() {
+    this.socket.on(SocketReceiveMessage.INVITATION, (player: Player) => {
+      this.invitation = { player, invited: true }
+    })
+  }
+
   addPlayer(player: Player) {
     if (player) this.friends.push(player)
   }
@@ -78,9 +99,12 @@ export default class Home extends Vue {
   inviteToPlay(id: string) {
     console.log('emitting', SocketEmitMessage.INVITE, 'with param', id)
     this.socket.emit(SocketEmitMessage.INVITE, id);
+    this.$router.push({ name: 'play' })
   }
 
-  redirectToGame() {
+  joinSession() {
+    console.log(this.invitation)
+    this.socket.emit(SocketEmitMessage.JOIN, this.invitation.player.id)
     this.$router.push({ name: 'play' })
   }
 }
