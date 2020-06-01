@@ -34,6 +34,7 @@ ul.friend-list {
   padding-bottom: 15px;
   font-size: 18px;
   list-style-type: none;
+  margin: 0;
 }
 
 .friend-list li {

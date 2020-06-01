@@ -90,7 +90,6 @@ export default class Replay extends Vue {
 .side {
   float: right;
   width: 275px;
-  margin-top: 9px;
   box-shadow: 0px 0px 4px black;
   padding: 10px 0;
   border-radius: 2px;

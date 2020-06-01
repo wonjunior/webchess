@@ -1,17 +1,24 @@
 <template>
-  <div v-if="authenticated">
-    <h2>Welcome back {{name}}</h2>
-    <div class="body">
-      <div class="side">
-        <Friendslist @invite-player="inviteToPlay" :friends="friends" />
-        <SearchPlayer @add-player="addPlayer" :ajax="ajax" />
-        <GamesList :playerId="id" :games="games" />
+  <div>
+    <div v-if="authenticated">
+      <h2>Welcome back {{name}}</h2>
+      <div class="body">
+        <div class="side">
+          <Friendslist @invite-player="inviteToPlay" :friends="friends" />
+          <SearchPlayer @add-player="addPlayer" :ajax="ajax" />
+          <GamesList :playerId="id" :games="games" />
+        </div>
+        <div class="main">
+          <PlayerStats :elo="elo" :wins="wins" :losses="losses" :previousElo="previousElo" />
+        </div>
       </div>
-      <div class="main">
-        <PlayerStats :elo="elo" :wins="wins" :losses="losses" :previousElo="previousElo" />
-      </div>
+      <button v-on:click="redirectToGame">play game</button>
     </div>
-    <button v-on:click="redirectToGame">play game</button>
+    <div v-else>
+       <div style="margin:50px">
+         <h2>Welcome to WebChess, please login to play!</h2>
+        </div>
+    </div>
   </div>
 </template>
 
@@ -83,7 +90,10 @@ export default class Home extends Vue {
 <style>
 .side {
  width: 275px;
- margin-top: -9px;
+}
+.side > * {
+  margin-top: 10px;
+  min-width: 220px;
 }
 .main {
   width: calc(100% - 275px - 20px);
@@ -95,5 +105,38 @@ export default class Home extends Vue {
   list-style-type: none;
   margin: 10px;
   float: right;
+  min-width: 500px;
+  vertical-align: top;
+  margin-top: 0;
+}
+
+@media only screen and (max-width: 1700px) {
+  .main {
+    margin-top: 20px;
+    float: none;
+    width: calc(100% - 275px - 20px + 100px);
+  }
+  .side {
+    width: 100%;
+  }
+  .side > ul {
+    margin-top: 0;
+  }
+  .side > div, .side > ul {
+    display: inline-block;
+    width: 32%;
+    min-width: 220px;
+    margin-right: 1%;
+    margin-top: 0;
+    vertical-align: top;
+  }
+}
+
+@media only screen and (max-width: 1175px) {
+  .side > div, .side > ul {
+    display: block;
+    width: 300px;
+    margin: 10px auto 0 auto;
+  }
 }
 </style>

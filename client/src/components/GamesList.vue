@@ -52,7 +52,6 @@ export default class GamesList extends Vue {
   padding-bottom: 15px;
   font-size: 15px;
   list-style-type: none;
-  margin-top: 20px;
 }
 .games-list-header {
   margin: auto;

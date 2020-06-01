@@ -5,9 +5,9 @@
       <div class="header-text"> WebChess </div>
     </div>
     <div>
-      <button class="menu-item"><router-link to="/">Home</router-link></button>
-      <button class="menu-item" v-if="authenticated" v-on:click="logout" id="logout-button"> Logout </button>
-      <button class="menu-item" v-else v-on:click="$auth.loginRedirect()" id="login-button"> Login </button>
+      <div class="menu-item"><router-link to="/">Home</router-link></div>
+      <div class="menu-item" v-if="authenticated" v-on:click="logout"> Logout </div>
+      <div class="menu-item" v-else v-on:click="$auth.loginRedirect()"> Login </div>
     </div>
     <div class="home">
       <router-view :socket="socket" :ajax="ajax" :authenticated="authenticated" />
@@ -76,7 +76,7 @@ a {
   color: black;
 }
 .home {
-  width: 50%;
+  width: 60%;
   margin: 20px auto;
 }
 .body, .home h2 {
@@ -90,7 +90,7 @@ a {
   margin: auto;
   color: #27242b;
   border-bottom: 2px solid #27242b;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   user-select: none;
   cursor: pointer;
 }
@@ -106,8 +106,23 @@ a {
 .menu-item {
   font-family: 'Libre Baskerville', serif;
   padding: 4px 8px;
-  font-size: 16px;
+  font-size: 17px;
+  line-height: 27px;
+  background: #27242b;
+  border-radius: 2px;
+  box-shadow: none;
   cursor: pointer;
+  display: inline-block;
+  margin: 0 5px;
+  height: 32px;
+  padding: 4px 9px;
+  color: white;
+}
+.menu-item:hover {
+  box-shadow: 0 0 5px grey;
+}
+.menu-item a.router-link-active {
+  color: grey;
 }
 
 #app {

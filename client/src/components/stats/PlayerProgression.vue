@@ -46,8 +46,8 @@ export default class PlayerProgression extends Vue {
 .elo-chart {
   display: block;
   width: 75%;
-  height: 200px;
-  margin: 30px 20px 20px 50px;
+  height: 275px;
+  margin: 30px 20px 0 50px;
   padding: 0;
   overflow: visible;
   border-left: 2px dotted #555;
