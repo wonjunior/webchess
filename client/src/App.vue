@@ -23,30 +23,46 @@ import { WebChessSocket } from './services/WebChessSocket'
 
 @Component
 export default class App extends Vue {
+
+  // Variables `authenticated`, `ajax` and `socket` are props for all rendered router
+  // views `authenticated`'s value is watched by thoses view components. Whenever it
+  // changes it will indicate that the authentication was successful and that both
+  // `socket` and `ajax` are available and ready to be used by the rendered component.
   public authenticated = false
   public ajax = null as null | Ajax
   public socket = null as null | WebChessSocket
 
-  private async created() {
+  private created() {
+    this.authenticate()
+  }
+
+  // The following function is called either when
+  // (a) App is created (i.e. the SPA is loaded for the first time on the client) cf. #created() ;
+  // (b) when the router changes the rendered page (i.e. <router-view /> component is changed).
+  @Watch('$route')
+  private async authenticate() {
+    // If user is already authenticated, we want to absolutely
+    // avoid overwriting `authenticated`, `socket` and `ajax`.
+    if (this.authenticated) return null
+
     const authenticated = await this.$auth.isAuthenticated()
 
-    if (!authenticated) return null;
+    // The user is not authenticated
+    if (!authenticated) return null
 
     const token = await this.$auth.getAccessToken()
 
+    // The access token is ready to be used. We can set both `authenticated`, `socket` and `ajax`.
+    // It is paramount that `authenticated` gets set last because it signals that both `socket`
+    // and `ajax` utilities are ready to be used by the rendered component.
     this.ajax = new Ajax(token)
     this.socket = new WebChessSocket(token)
     this.authenticated = authenticated
   }
 
-  // @Watch('$route')
-  // private async isAuthenticated() {}
-
   private async logout() {
     await this.$auth.logout();
-
-    // Navigate back to home
-    // this.$router.push({path: '/'});
+    // this.$router.push({ name: 'home' })
   }
 }
 </script>
