@@ -51,20 +51,17 @@ export class Game {
   get id() { return Game.model.id }
   set id(id: string) { Game.model.id = id }
 
-  async create(socket: Socket) {
-    this.white = new PlayerController(socket, Color.WHITE)
+  async create(p1: PlayerController, p2: PlayerController) {
+    this.white = p1
+    this.black = p2
+    this.white.color = Color.WHITE;
+    this.black.color = Color.BLACK;
+
     const { status } = await Game.model.create()
 
     if (status != ChessAPI.Status.STARTED) return console.error('[Chess API] Game creation failed')
 
-    console.info(`[${this.id}] player created game`)
-  }
-
-  join(socket: Socket): boolean {
-    if (this.white == defaultPlayer) return false
-
-    this.black = new PlayerController(socket, Color.BLACK)
-    console.info(`[${this.id}] second player joined game`)
+    console.info(`[${this.id}] created game`)
 
     // setup receptors on both sockets
     this.black.receiveMove(this.onMoveReceived.bind(this))
@@ -72,8 +69,6 @@ export class Game {
 
     this.current = this.white
     this.current.giveTurn(this.state)
-
-    return true
   }
 
   async onMoveReceived(sender: PlayerController, move: Move) {

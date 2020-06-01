@@ -76,8 +76,8 @@ export default class Home extends Vue {
   }
 
   inviteToPlay(id: string) {
-    console.log('emitting', SocketEmitMessage.INVITEPLAYER, 'with param', {id})
-    this.socket.emit(SocketEmitMessage.INVITEPLAYER, { id });
+    console.log('emitting', SocketEmitMessage.INVITE, 'with param', id)
+    this.socket.emit(SocketEmitMessage.INVITE, id);
   }
 
   redirectToGame() {

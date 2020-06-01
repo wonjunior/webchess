@@ -1,7 +1,7 @@
 import io from 'socket.io-client'
 
 export enum SocketEmitMessage {
-  INVITEPLAYER = 'invitePlayer',
+  INVITE = 'invite',
   MOVE = 'move',
 }
 export enum SocketReceiveMessage {
@@ -16,7 +16,7 @@ export class WebChessSocket {
     this.socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: { token: 'Bearer ' + token }})
   }
 
-  emit(msg: SocketEmitMessage, o: Record<string, any>) {
+  emit(msg: SocketEmitMessage, o: any) {
     this.socket.emit(msg, o)
   }
 

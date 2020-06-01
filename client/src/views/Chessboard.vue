@@ -32,8 +32,7 @@ export default class Chessboard extends Vue {
   }
 
   setUpSocket() {
-    this.socket.emit(SocketEmitMessage.MOVE, {})
-    // const gameId = prompt("game id")
+  
     this.setBoard()
     this.socket.on(SocketReceiveMessage.YOURTURN, (state: string) => {
       console.log('My turn!', state)

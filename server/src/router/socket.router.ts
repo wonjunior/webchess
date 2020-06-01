@@ -7,14 +7,16 @@ export default class SocketRouter {
   gameController = new GameController()
 
   public route(socket: Socket) {
-    const query = socket.handshake.query
+    this.gameController.newPlayer(socket)
 
-    socket.on('invitePlayer', id => console.log('inviting player: ', id))
-    socket.on('move', () => console.log('yeah'))
+    socket.on('invite', (opponent) => {
+      console.log('inviting player: ', opponent)
+      this.gameController.invite(socket, opponent)
+    })
 
-    // if (!query.gameId)
-    //   this.gameController.create(socket)
-    // else
-    //   this.gameController.join(socket)
+    socket.on('accept', (opponent) => {
+      console.log('accepting match with player: ', opponent)
+      this.gameController.acceptInvitation(socket, opponent)
+    })
   }
 }

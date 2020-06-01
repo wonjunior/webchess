@@ -12,16 +12,26 @@ enum SocketMessage {
   MOVE = 'move',
   YOURTURN = 'yourTurn',
   ENDGAME = 'gameover',
-  INVALIDATE = 'invalidate'
+  INVALIDATE = 'invalidate',
+  INVITE = 'invite'
 }
 
 export default class PlayerController {
-  constructor(private socket: Socket, public color: Color) {}
+
+  public color = Color.WHITE;
+  public disponible = true;
+  public opponent = ''
+
+  constructor(private socket: Socket) {}
 
   /**
    *************************************************************************************************
    * Emitter definitions
    */
+  public invite(opponent: PlayerController) {
+    this.socket.emit(SocketMessage.INVITE, opponent.socket.player)
+  }
+  
   public giveTurn(state: string) {
     this.socket.emit(SocketMessage.YOURTURN, state)
   }
