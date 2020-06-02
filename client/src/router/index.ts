@@ -7,8 +7,8 @@ import Replay from '../views/Replay.vue'
 import Chessboard from '../views/Chessboard.vue'
 
 Vue.use(Auth, {
-  issuer: 'https://dev-232123.okta.com/oauth2/default',
-  clientId: '0oaanm545S538wrmZ4x6',
+  issuer: process.env.VUE_APP_OKTA_ISSUER,
+  clientId: process.env.VUE_APP_OKTA_CLIENT_ID,
   redirectUri: window.location.origin + '/implicit/callback',
   scopes: ['openid', 'profile', 'email'],
   pkce: true
