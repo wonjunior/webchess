@@ -103,7 +103,6 @@ export default class Home extends Vue {
   }
 
   joinSession() {
-    console.log(this.invitation)
     this.socket.emit(SocketEmitMessage.JOIN, this.invitation.player.id)
     this.$router.push({ name: 'play' })
   }

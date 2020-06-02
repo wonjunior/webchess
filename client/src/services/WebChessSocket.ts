@@ -18,11 +18,11 @@ export class WebChessSocket {
     this.socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: { token: 'Bearer ' + token }})
   }
 
-  emit(msg: SocketEmitMessage, o: any) {
+  emit(msg: SocketEmitMessage, o: unknown) {
     this.socket.emit(msg, o)
   }
 
-  on(msg: SocketReceiveMessage, callback: (...args: any) => void) {
+  on(msg: SocketReceiveMessage, callback: Function) {
     this.socket.on(msg, callback)
   }
 }

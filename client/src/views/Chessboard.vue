@@ -3,18 +3,16 @@
 </template>
 
 <script lang="ts">
-import { Vue, Component, Prop, Watch } from 'vue-property-decorator'
+import { Vue, Component, Prop } from 'vue-property-decorator'
 
 import { WebChessSocket, SocketEmitMessage, SocketReceiveMessage } from '../services/WebChessSocket'
 import Ajax from '../utils/Ajax'
 
-import AbChess from '@/assets/abchess/AbChess.js'
-// import io from 'socket.io-client'
-// import { Socket } from 'socket.io-client'
-
+import { Chessboard as cmChessboard, MOVE_INPUT_MODE, INPUT_EVENT_TYPE } from 'cm-chessboard'
 interface Move {
-  start: string;
-  end: string;
+  type: string;
+  squareFrom: string;
+  squareTo: string;
 }
 
 @Component
@@ -28,39 +26,59 @@ export default class Chessboard extends Vue {
 
   async mounted() {
     if (!this.authenticated) return this.$router.push({ name: 'home' });
+    this.onceAuthenticated()
+  }
+
+  private onceAuthenticated() {
+    this.setBoard()
     this.setUpSocket()
   }
 
-  setUpSocket() {
-  
-    this.setBoard()
+  private setUpSocket() {
     this.socket.on(SocketReceiveMessage.YOURTURN, (state: string) => {
       console.log('My turn!', state)
-      this.board.setFEN(state)
+      this.board.setPosition(state)
+      // this.board.setFEN(state)
     })
     this.socket.on(SocketReceiveMessage.INVALIDATE, (state: string) => {
       console.log('Invalid move! reseting to ', state)
-      this.setBoard(state)
+      this.board.setPosition(state)
+      // this.setBoard(state)
     })
   }
 
-  setBoard(state = '') {
-    this.$el.innerHTML = '';
-    this.board = new AbChess(this.$el.id, { animated: false })
-    state ? this.board.setFEN(state) : this.board.setFEN()
-    this.board.onMovePlayed((move: Move) => {
-      this.socket.emit(SocketEmitMessage.MOVE, { from: move.start, to: move.end});
+  private setBoard() {
+    this.board = new cmChessboard(this.$el, {
+      position: "start",
+      moveInputMode: MOVE_INPUT_MODE.dragPiece,
+      sprite: { url: "./chessboard-sprite.svg" }
+    })
+
+    this.board.enableMoveInput((event: Move) => {
+      switch (event.type) {
+        case INPUT_EVENT_TYPE.moveStart:
+          // console.log(`moveStart: ${event.square}`)
+          return true
+        case INPUT_EVENT_TYPE.moveDone:
+          this.socket.emit(SocketEmitMessage.MOVE, { from: event.squareFrom, to: event.squareTo })
+          // console.log(`moveDone: ${event.squareFrom}-${event.squareTo}`)
+          return true
+        case INPUT_EVENT_TYPE.moveCanceled:
+          // console.log(`moveCanceled`)
+      }
     })
   }
 }
 
+import 'cm-chessboard/styles/cm-chessboard.css'
 </script>
-
-<style src="@/assets/abchess/AbChess.css"></style>
 
 <style>
 #board {
-  display: inline-block;
-  margin-top: 20px;
+  max-width: 450px;
+  max-height: 430px;
+  width: calc(100vw - 40px);
+  height: calc(95vw - 40px);
+  margin: auto
 }
 </style>

@@ -17,7 +17,7 @@
       </div>
     </div>
     <div class="main">
-      <div id="board"></div>
+      <div id="ab-board"></div>
     </div>
   </div>
 </template>
@@ -78,7 +78,7 @@ export default class Replay extends Vue {
 <style src="@/assets/abchess/AbChess.css"></style>
 
 <style scoped>
-#board {
+#ab-board {
   display: inline-block;
   margin-top: 20px;
 }
