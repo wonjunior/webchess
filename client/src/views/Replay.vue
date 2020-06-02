@@ -46,7 +46,7 @@ export default class Replay extends Vue {
     this.black = this.$route.params.black
     this.pgn = this.$route.params.pgn
 
-    this.board = new AbChess('board', { clickable: false, draggable: false, animated: true })
+    this.board = new AbChess('ab-board', { clickable: false, draggable: false, animated: true })
     this.board.setPGN(this.pgn)
     this.moves = this.board.getMovesPGN()
     this.lastIndex = this.moves.length;

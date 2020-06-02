@@ -30,8 +30,8 @@ namespace ChessAPI {
     STARTED = 'new game started',
   }
   export enum Endgame {
-    CHECKMATE = 'checkmate',
-    STALEMATE = 'stalemate',
+    CHECKMATE = 'check mate',
+    STALEMATE = 'stale mate',
     DRAW = 'draw',
     REPETITION = 'threefold repetition',
     INSUFFICIENT = 'insufficient material',
@@ -112,6 +112,7 @@ export class Game {
   }
 
   private async endGame(status: string) {
+    console.log('[endGame: status]', status)
     //we take the point of view of the white for calculus
     let result = 0.5
     let winner = '-'

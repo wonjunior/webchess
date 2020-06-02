@@ -66,7 +66,6 @@ export default class GamesList extends Vue {
 .games-list-item img {
   vertical-align: middle;
   width: 20px;
-  margin-right: 5px;
 }
 .replay-icon {
   margin-left: 10px;
