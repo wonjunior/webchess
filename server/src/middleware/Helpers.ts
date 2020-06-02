@@ -1,8 +1,3 @@
-import { Request } from 'express'
-import { Socket } from 'socket.io'
-
-import { Player } from '../schemas/player.schema'
-
 export interface WebChessError {
   error: string
 }

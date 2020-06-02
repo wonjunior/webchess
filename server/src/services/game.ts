@@ -84,8 +84,7 @@ export class Game {
     // overridden by a concurrent call by the opponent
     const current = this.current
 
-    if (sender.color != current.color || !(await this.play(current, move)))
-    {
+    if (sender.color != current.color || !(await this.play(current, move))) {
       console.log('invalidating move from ', sender.color)
       return sender.invalidateMove(this.state)
     }
@@ -98,7 +97,7 @@ export class Game {
   }
 
   private async play(player: PlayerController, move: Move): Promise<boolean | void> {
-    console.log('playing---')
+    console.log('[playing]', move)
     const { status } = await Game.model.play(move)
     if (status != ChessApiStatus.MOVED) return false
 

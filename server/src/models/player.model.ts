@@ -44,9 +44,10 @@ export class PlayerModel {
   }
 
   /**
-   * Returns all players which validate both points:
+   * Returns all players which validate all following conditions:
    * (a) are not friends with `this.player`
-   * (b) match the input string
+   * (b) is not the player itself
+   * (c) match the input string
    * @param input the search input
    */
   async search(input: string) {

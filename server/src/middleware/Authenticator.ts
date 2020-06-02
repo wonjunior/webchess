@@ -21,10 +21,9 @@ export default class Authenticator {
   }
 
   /**
-   * Used in Express' middleware pipeline
-   * Verifies the request's authorization header
-   * If the operation is successful the player's id is stored inside the
-   * Request object and the next middleware function is called
+   * Used in Express' middleware pipeline: verifies the request's authorization header. If the
+   * operation is successful the player's id is stored inside the Request object and the next
+   * middleware function is called.
    */
   async middleware(req: Request, res: Response, next: NextFunction): Promise<void | Response<any>> {
     const response = await this.verify(req.headers.authorization)
@@ -35,6 +34,11 @@ export default class Authenticator {
     next()
   }
 
+  /**
+   * Used in Socket.io's middleware pipeline: verifies the request's authorization header. If the
+   * operation is successful the player's id is stored inside the Request object and the next
+   * middleware function is called.
+   */
   async socketMiddleware(socket: Socket, next: any) {
     const { token } = socket.handshake.query || {};
     const response = await this.verify(token)

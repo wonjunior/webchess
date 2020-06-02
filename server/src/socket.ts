@@ -5,11 +5,6 @@ import SocketRouter from './router/socket.router'
 import Authenticator from './middleware/Authenticator'
 import PlayerResolver from './middleware/PlayerResolver'
 
-export interface IUser {
-  id: string;
-  name: string;
-}
-
 enum WebSocketServerStatus {
   CONNECTION = 'connection'
 }

@@ -8,10 +8,9 @@ import { Socket } from 'socket.io'
 export default class PlayerResolver {
 
   /**
-   * Used in Express' middleware pipeline
-   * Resolves the player with the request's email
-   * If the operation is successful the player is stored inside the Request
-   * object and the next middleware in line is called
+   * Used in Express' middleware pipeline: resolves the player with the request's email. If the
+   * operation is successful the player is stored inside the Request object and the next middleware
+   * in line is called.
    */
   async middleware(req: Request, res: Response, next: NextFunction): Promise<void | Response<any>> {
     const response = await this.call(req.email)
@@ -22,6 +21,11 @@ export default class PlayerResolver {
     next()
   }
 
+  /**
+   * Used in Socket.io' middleware pipeline: resolves the player with the request's email. If the
+   * operation is successful the player is stored inside the socket and the next middleware in line
+   * is called.
+   */
   async socketMiddleware(socket: Socket, next: NextFunction) {
     const response = await this.call(socket.email)
 

@@ -3,7 +3,6 @@ import { Request, Response } from "express";
 import { PlayerModel } from "../models/player.model"
 
 export class PlayerController {
-
   public async getAllPlayers(req: Request, res: Response) {
     res.json(await PlayerModel.all())
   }
