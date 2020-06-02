@@ -1,7 +1,7 @@
 // import { Types, MongooseDocument } from 'mongoose'
 
 import { PlayerEntity, Player } from '../schemas/player.schema'
-import { databaseErrorHandling } from '../middleware/Helpers'
+import { databaseErrorHandling, WebChessError } from '../middleware/Helpers'
 
 export class PlayerModel {
   player: Player
@@ -99,12 +99,20 @@ export class PlayerModel {
       .then(() => ({ message: 'Player has beed removed from your friends list' }))
       .catch(databaseErrorHandling)
   }
+
   async setElo(elo: number) {
-    return await PlayerEntity
+    const response = await PlayerEntity
       .findByIdAndUpdate(this.player.id, { elo })
       .then(() => ({ message: 'Player elo has beed updated' }))
       .catch(databaseErrorHandling)
+
+    if ((response as WebChessError).error) return response
+
+    return await PlayerEntity
+      .findByIdAndUpdate(this.player.id, { $push: { previous_elo: elo }})
+      .catch(databaseErrorHandling)
   }
+
   async archiveGame(white: {name: string, id: string}, black: {name: string, id: string}, pgn: string, result: string) {
     return await PlayerEntity
       .findByIdAndUpdate(this.player.id, {
