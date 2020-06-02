@@ -31,4 +31,8 @@ export default class GameModel {
   public async getFEN() {
     return await this.api.post('fen', { game_id: this.id })
   }
+
+  public async getPGN() {
+    return await this.api.post('pgn', { game_id: this.id })
+  }
 }

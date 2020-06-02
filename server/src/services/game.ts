@@ -111,15 +111,20 @@ export class Game {
     return true
   }
 
-  private endGame(status: string) {
+  private async endGame(status: string) {
     //we take the point of view of the white for calculus
     let result = 0.5
+    let winner = '-'
     const evolutionFactor = 50.0
     if (status == ChessAPI.Endgame.CHECKMATE) {
-      if (this.current.color == Color.BLACK)
+      if (this.current.color == Color.BLACK) {
         result = 1.0
-      else
+        winner = 'w'
+      }
+      else {
         result = 0.0
+        winner = 'b'
+      }
     }
     const blackElo = this.black.player.elo
     const whiteElo = this.white.player.elo
@@ -134,5 +139,17 @@ export class Game {
     this.black.endGame()
 
     this.controller.deleteGame(this.id)
+
+    const { pgn } = await Game.model.getPGN()
+    const white = {
+      name: this.white.player.name,
+      id: this.white.player.id
+    }
+    const black = {
+      name: this.black.player.name,
+      id: this.black.player.id
+    }
+    whiteModel.archiveGame(white, black, pgn, winner)
+    blackModel.archiveGame(white, black, pgn, winner)
   }
 }
