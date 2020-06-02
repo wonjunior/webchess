@@ -4,6 +4,7 @@ import PlayerController from '../controllers/socket/player.controller'
 import { PlayerModel } from '../models/player.model'
 import GameModel from '../models/game.model'
 import { Socket } from 'socket.io'
+import GameController  from '../controllers/socket/game.controller'
 
 
 interface Move {
@@ -46,10 +47,15 @@ export class Game {
   private black = defaultPlayer
   private current = defaultPlayer
   private state = FEN.INITIAL
+  private controller: GameController
 
   // GameModel owns the game's id
   get id() { return Game.model.id }
   set id(id: string) { Game.model.id = id }
+
+  constructor(controller: GameController) {
+    this.controller = controller
+  }
 
   async create(p1: PlayerController, p2: PlayerController) {
     this.white = p1
@@ -126,5 +132,7 @@ export class Game {
 
     this.white.endGame()
     this.black.endGame()
+
+    this.controller.deleteGame(this.id)
   }
 }

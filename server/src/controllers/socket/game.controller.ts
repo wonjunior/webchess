@@ -15,9 +15,17 @@ export default class GameController {
     this.setupSocketListener(player)
   }
 
+  public deleteGame(id: string){
+    this.games.delete(id)
+  }
+
   private setupSocketListener(player: PlayerController) {
     player.receiveInvite(this)
     player.receiveConfirmation(this)
+    player.onDisconnect((reason: string) => {
+      console.log(player.id, ' has been disconnected. Reason: ', reason)
+      this.players.delete(player.id)
+    })
   }
 
   public invite(socket: Socket, opponent: string) {
@@ -51,7 +59,7 @@ export default class GameController {
   }
 
   public async newGame(player1: PlayerController, player2: PlayerController) {
-    const game = new Game()
+    const game = new Game(this)
     await game.create(player1, player2)
 
     this.games.set(game.id, game)

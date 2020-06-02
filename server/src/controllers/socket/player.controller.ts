@@ -48,6 +48,8 @@ export default class PlayerController {
 
   public endGame() {
     this.socket.emit(SocketMessage.ENDGAME, {})
+    this.available = true
+    this.opponent = ""
   }
 
   /**
@@ -70,5 +72,8 @@ export default class PlayerController {
       console.log('accepting match with player: ', opponent)
       gameController.acceptInvitation(this.socket, opponent)
     })
+  }
+  public onDisconnect(callback: any){
+    this.socket.on('disconnect', callback)
   }
 }
