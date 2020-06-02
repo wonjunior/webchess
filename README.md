@@ -2,6 +2,13 @@
 
 - Mid term screencast: https://drive.google.com/open?id=1mwGlG66e5qJCH__R6gG6FPdLgwPVPN0Y
 
+* Final screencasts
+  * Project demo: https://drive.google.com/file/d/1FnMAGrm3o_Xtqj8x0W0cI5onPKYBSIiU/view?usp=sharing
+  * Ivan's screencast: https://drive.google.com/file/d/1bCSc1NMaQn6Cn0t02urReVisg5thDQAi/view?usp=sharing
+  * Hugo's screencast:
+
+<p>&nbsp;</p>
+
 ## Project idea:
 
 Online chess platform. Connect, play against other users, watch replays of your games as well as famous chess games, track progress on leaderboard.
