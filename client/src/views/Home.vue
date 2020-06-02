@@ -12,9 +12,9 @@
           <PlayerStats :elo="elo" :wins="wins" :losses="losses" :previousElo="previousElo" />
         </div>
       </div>
-      <div v-if="invitation.invited">
-        Player {{invitation.player.name}} has invited you to play!
-        <span v-on:click="joinSession" style="cursor:pointer">Join session</span>
+      <div v-if="invitation.invited" class="invitation-popup">
+        {{invitation.player.name}} has invited you to play!
+        <span v-on:click="joinSession">Join session</span>
       </div>
     </div>
     <div v-else>
@@ -99,12 +99,12 @@ export default class Home extends Vue {
   inviteToPlay(id: string) {
     console.log('emitting', SocketEmitMessage.INVITE, 'with param', id)
     this.socket.emit(SocketEmitMessage.INVITE, id);
-    this.$router.push({ name: 'play' })
+    this.$router.push({ name: 'play', params: { color: 'w' } })
   }
 
   joinSession() {
     this.socket.emit(SocketEmitMessage.JOIN, this.invitation.player.id)
-    this.$router.push({ name: 'play' })
+    this.$router.push({ name: 'play', params: { color: 'b' } })
   }
 }
 
@@ -161,5 +161,32 @@ export default class Home extends Vue {
     width: 300px;
     margin: 10px auto 0 auto;
   }
+}
+
+.invitation-popup {
+  font-family: 'Libre Baskerville', serif;
+  background: lightgreen;
+  padding: 10px 20px;
+  position: fixed;
+  left: 50%;
+  transform: translateX(-50%);
+  top: 10px;
+  border-radius: 2px;
+  box-shadow: 0 0 5px black;
+  font-size: 16px;
+  font-weight: bold;
+  width: 70%;
+}
+.invitation-popup span {
+  margin-left: 10px;
+  background: #27242b;
+  cursor: pointer;
+  color: white;
+  font-weight: 100;
+  padding: 5px 10px;
+  border-radius: 2px;
+}
+.invitation-popup span:hover {
+  box-shadow: 0 0 5px grey;
 }
 </style>

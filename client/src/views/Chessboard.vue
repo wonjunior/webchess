@@ -1,5 +1,8 @@
 <template>
-  <div id="board"></div>
+  <div>
+    <h3>Playing {{ color == 'w' ? 'white' : 'black' }}</h3>
+    <div id="board"></div>
+  </div>
 </template>
 
 <script lang="ts">
@@ -9,6 +12,7 @@ import { WebChessSocket, SocketEmitMessage, SocketReceiveMessage } from '../serv
 import Ajax from '../utils/Ajax'
 
 import { Chessboard as cmChessboard, MOVE_INPUT_MODE, INPUT_EVENT_TYPE } from 'cm-chessboard'
+
 interface Move {
   type: string;
   squareFrom: string;
@@ -23,6 +27,7 @@ export default class Chessboard extends Vue {
 
   // eslint-disable-next-line
   private board: any
+  private color = ''
 
   async mounted() {
     if (!this.authenticated) return this.$router.push({ name: 'home' });
@@ -48,7 +53,8 @@ export default class Chessboard extends Vue {
   }
 
   private setBoard() {
-    this.board = new cmChessboard(this.$el, {
+    this.color = this.$route.params.color
+    this.board = new cmChessboard(this.$el.lastChild, {
       position: "start",
       moveInputMode: MOVE_INPUT_MODE.dragPiece,
       sprite: { url: "./chessboard-sprite.svg" }
