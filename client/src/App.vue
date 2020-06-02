@@ -18,7 +18,7 @@
 <script lang="ts">
 import { Component, Watch, Vue } from 'vue-property-decorator'
 
-import Ajax from './utils/Ajax'
+import Ajax from './services/Ajax'
 import { WebChessSocket } from './services/WebChessSocket'
 
 @Component

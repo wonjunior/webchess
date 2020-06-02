@@ -15,7 +15,7 @@
 import { Component, Vue, Emit, Prop } from 'vue-property-decorator'
 
 import Player from '../models/Player'
-import Ajax from '../utils/Ajax'
+import Ajax from '../services/Ajax'
 
 @Component
 export default class SearchPlayer extends Vue {

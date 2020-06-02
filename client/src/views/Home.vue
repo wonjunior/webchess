@@ -28,7 +28,7 @@
 <script lang="ts">
 import { Component, Vue, Prop, Watch } from 'vue-property-decorator'
 
-import Ajax from '../utils/Ajax'
+import Ajax from '../services/Ajax'
 import { WebChessSocket, SocketEmitMessage, SocketReceiveMessage } from '../services/WebChessSocket'
 
 import Friendslist from '@/components/FriendsList.vue'

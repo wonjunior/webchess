@@ -9,7 +9,7 @@
 import { Vue, Component, Prop } from 'vue-property-decorator'
 
 import { WebChessSocket, SocketEmitMessage, SocketReceiveMessage } from '../services/WebChessSocket'
-import Ajax from '../utils/Ajax'
+import Ajax from '../services/Ajax'
 
 import { Chessboard as cmChessboard, MOVE_INPUT_MODE, INPUT_EVENT_TYPE } from 'cm-chessboard'
 
@@ -63,14 +63,12 @@ export default class Chessboard extends Vue {
     this.board.enableMoveInput((event: Move) => {
       switch (event.type) {
         case INPUT_EVENT_TYPE.moveStart:
-          // console.log(`moveStart: ${event.square}`)
           return true
         case INPUT_EVENT_TYPE.moveDone:
           this.socket.emit(SocketEmitMessage.MOVE, { from: event.squareFrom, to: event.squareTo })
-          // console.log(`moveDone: ${event.squareFrom}-${event.squareTo}`)
           return true
         case INPUT_EVENT_TYPE.moveCanceled:
-          // console.log(`moveCanceled`)
+          return null
       }
     })
   }
