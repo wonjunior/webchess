@@ -5,7 +5,7 @@
 * Final screencasts
   * Project demo: https://drive.google.com/file/d/1FnMAGrm3o_Xtqj8x0W0cI5onPKYBSIiU/view?usp=sharing
   * Ivan's screencast: https://drive.google.com/file/d/1bCSc1NMaQn6Cn0t02urReVisg5thDQAi/view?usp=sharing
-  * Hugo's screencast:
+  * Hugo's screencast: https://drive.google.com/file/d/15iyDDAb2hiCHs1x2w8nPHWwiR71Hlc-m/view?usp=sharing
 
 <p>&nbsp;</p>
 
