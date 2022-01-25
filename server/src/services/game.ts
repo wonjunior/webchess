@@ -2,10 +2,9 @@
 
 import PlayerController from '../controllers/socket/player.controller'
 import { PlayerModel } from '../models/player.model'
-import GameModel from '../models/game.model'
 import { Socket } from 'socket.io'
 import GameController  from '../controllers/socket/game.controller'
-
+import * as chessjs from 'chess.js'
 
 interface Move {
   from: string;
@@ -41,33 +40,38 @@ namespace ChessAPI {
 const defaultPlayer = {} as PlayerController
 
 export class Game {
-  static model = new GameModel()
 
+  private static availablesIds: number[] = []
+  private static gamesCounter: number = 0
+
+  
+  private chessInstance: chessjs.ChessInstance
   private white = defaultPlayer
   private black = defaultPlayer
   private current = defaultPlayer
-  private state = FEN.INITIAL
+  private state : string = FEN.INITIAL
   private controller: GameController
-
-  // GameModel owns the game's id
-  get id() { return Game.model.id }
-  set id(id: string) { Game.model.id = id }
+  public id : string
 
   constructor(controller: GameController) {
     this.controller = controller
+    this.chessInstance = new chessjs.Chess(FEN.INITIAL);
+
+    //create or recyle game id
+    if (Game.availablesIds.length > 0) {
+      this.id = String(Game.availablesIds.pop())
+    } else {
+      this.id = String(Game.gamesCounter++)
+    }
   }
 
   async create(p1: PlayerController, p2: PlayerController) {
+    console.info(`[${this.id}] created game`)
+
     this.white = p1
     this.black = p2
     this.white.color = Color.WHITE;
     this.black.color = Color.BLACK;
-
-    const { status } = await Game.model.create()
-
-    if (status != ChessAPI.Status.STARTED) return console.error('[Chess API] Game creation failed')
-
-    console.info(`[${this.id}] created game`)
 
     // setup receptors on both sockets
     this.black.receiveMove(this.onMoveReceived.bind(this))
@@ -89,42 +93,40 @@ export class Game {
       return sender.invalidateMove(this.state)
     }
 
-    const { status } = await Game.model.gameState()
-    if (status != ChessAPI.Endgame.CONTINUE)
-      return this.endGame(status)
+    if (this.chessInstance.game_over())
+      return this.endGame()
 
     this.current.giveTurn(this.state)
   }
 
   private async play(player: PlayerController, move: Move): Promise<boolean | void> {
     console.log('[playing]', move)
-    const { status } = await Game.model.play(move)
-    if (status != ChessApiStatus.MOVED) return false
-
-    const { fen_string } = await Game.model.getFEN()
-    // if (!pgn) return console.error('[Chess API] Fetching FEN from API failed')
-
+    if (this.chessInstance.move(move as chessjs.Move) == null) return false
     this.current = (player.color == Color.WHITE) ? this.black : this.white
-    this.state = fen_string
-
+    this.state = this.chessInstance.fen()
     return true
   }
 
-  private async endGame(status: string) {
-    console.log('[endGame: status]', status)
+  private async endGame() {
+    
     //we take the point of view of the white for calculus
     let result = 0.5
     let winner = '-'
     const evolutionFactor = 50.0
-    if (status == ChessAPI.Endgame.CHECKMATE) {
+    if (this.chessInstance.in_checkmate()) {
       if (this.current.color == Color.BLACK) {
+        console.log('[endGame] White won by checkmate')
         result = 1.0
         winner = 'w'
       }
       else {
+        console.log('[endGame] Black won by checkmate')
         result = 0.0
         winner = 'b'
       }
+    }
+    else {
+      console.log('[endGame] Draw game')
     }
     const blackElo = this.black.player.elo
     const whiteElo = this.white.player.elo
@@ -138,9 +140,10 @@ export class Game {
     this.white.endGame()
     this.black.endGame()
 
+    Game.availablesIds.push(parseInt(this.id, 10))
     this.controller.deleteGame(this.id)
 
-    const { pgn } = await Game.model.getPGN()
+    const pgn = this.chessInstance.pgn()
     const white = {
       name: this.white.player.name,
       id: this.white.player.id

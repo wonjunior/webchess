@@ -8,6 +8,7 @@ interface Move {
 
 /**
  * Our source of truth is the 3rd party chess API
+ * EDIT: this class is now UNUSED because the chess API is not available anymore, instead we use chess.js internally
  */
 export default class GameModel {
   public id = ''

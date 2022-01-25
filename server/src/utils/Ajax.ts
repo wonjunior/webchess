@@ -43,7 +43,7 @@ enum HTTPMethod {
     }
 
     private async request(method: HTTPMethod, url: string, data: Record<string, any> | null = null) {
-
+      console.info('Fetch ' + this.root + url + ' ...')
       const response = await fetch(this.root + url, {
         method,
         body: data ? JSON.stringify(data) : undefined,
