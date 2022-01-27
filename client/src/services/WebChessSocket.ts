@@ -3,12 +3,15 @@ import io from 'socket.io-client'
 export enum SocketEmitMessage {
   INVITE = 'invite',
   MOVE = 'move',
-  JOIN = 'join'
+  JOIN = 'join',
+  QUIT = 'quit'
 }
 export enum SocketReceiveMessage {
   YOURTURN = 'yourTurn',
   INVALIDATE = 'invalidate',
-  INVITATION = 'invite'
+  INVITATION = 'invite',
+  ENDGAME = 'gameover',
+  START = 'start'
 }
 
 export class WebChessSocket {
@@ -18,8 +21,8 @@ export class WebChessSocket {
     this.socket = io(process.env.VUE_APP_BACKEND_ROOT, { query: { token: 'Bearer ' + token }})
   }
 
-  emit(msg: SocketEmitMessage, o: unknown) {
-    this.socket.emit(msg, o)
+  emit(msg: SocketEmitMessage, args: unknown) {
+    this.socket.emit(msg, args)
   }
 
   on(msg: SocketReceiveMessage, callback: Function) {

@@ -1,8 +1,14 @@
 <template>
   <div>
     <h3>Playing {{ color == 'w' ? 'white' : 'black' }}</h3>
+    <h4 v-if="inGame">Connected to game</h4>
+    <h4 v-else>Not connected to game</h4>
+
+    <button v-on:click="quitGame()"> Quit game </button>
     <div id="board"></div>
+    
   </div>
+  
 </template>
 
 <script lang="ts">
@@ -23,11 +29,12 @@ interface Move {
 export default class Chessboard extends Vue {
   @Prop() authenticated: boolean
   @Prop() ajax: Ajax
-  @Prop() socket: WebChessSocket
+  @Prop() socket: WebChessSocket 
 
   // eslint-disable-next-line
   private board: any
   private color = ''
+  private inGame = false
 
   async mounted() {
     if (!this.authenticated) return this.$router.push({ name: 'home' });
@@ -50,6 +57,22 @@ export default class Chessboard extends Vue {
       this.board.setPosition(state)
       // this.setBoard(state)
     })
+    this.socket.on(SocketReceiveMessage.START, () => {
+      this.inGame = true
+      console.log('Game start')
+      //TODO: Show results ...
+    })
+    this.socket.on(SocketReceiveMessage.ENDGAME, () => {
+      console.log('Game end')
+      this.inGame = false
+      //TODO: Show results ...
+    })
+  }
+
+  private quitGame() {
+    if(!this.authenticated) return
+    this.socket.emit(SocketEmitMessage.QUIT, {})
+    //this.$router.push({ name: 'home' })
   }
 
   private setBoard() {
@@ -83,6 +106,6 @@ import 'cm-chessboard/styles/cm-chessboard.css'
   max-height: 430px;
   width: calc(100vw - 40px);
   height: calc(95vw - 40px);
-  margin: auto
+  margin: auto;
 }
 </style>

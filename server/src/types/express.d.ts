@@ -11,7 +11,7 @@ declare global {
   namespace SocketIO {
     interface Socket {
       email: string,
-      game: string,
+      //game: string,
       player: Player,
     }
   }
