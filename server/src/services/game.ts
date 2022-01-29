@@ -69,7 +69,7 @@ export class Game {
     this.current.giveTurn(this.state)
   }
 
-  onMoveReceived(sender: PlayerController, move: Move) {
+  private onMoveReceived(sender: PlayerController, move: Move) {
     console.info(`[${this.id}] move -> sender: ${sender.color} current: ${this.current.color}`)
 
     // we copy the current player to make sure it is not
@@ -80,6 +80,7 @@ export class Game {
       console.log('invalidating move from ', sender.color, current.color)
       return sender.invalidateMove(this.state)
     }
+    sender.validateMove()
 
     if (this.chessInstance.game_over())
       return this.endGame(this.getGameResult())
@@ -131,13 +132,17 @@ export class Game {
     //result = 1 if white won and 0 if black won and 0.5 if draw
     const delta_elo_white = Math.floor(evolutionFactor * (result - estimation))
 
-    const whiteModel = new PlayerModel(this.black.player)
-    const blackModel = new PlayerModel(this.white.player)
+    console.log(this.white.player.name + ': ' + this.white.player.elo + ' + ' + String(delta_elo_white))
+    console.log(this.black.player.name + ': ' + this.black.player.elo + ' - ' + String(delta_elo_white))
+
+
+    const whiteModel = new PlayerModel(this.white.player)
+    const blackModel = new PlayerModel(this.black.player)
     whiteModel.setElo(whiteElo + delta_elo_white)
     blackModel.setElo(blackElo - delta_elo_white)
 
-    this.white.endGame()
-    this.black.endGame()
+    this.white.endGame(result, delta_elo_white)
+    this.black.endGame(result, delta_elo_white)
 
     Game.availablesIds.push(parseInt(this.id, 10))
     this.controller.deleteGame(this.id)

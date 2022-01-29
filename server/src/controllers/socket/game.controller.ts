@@ -65,8 +65,8 @@ export default class GameController {
   public newGame(player1: PlayerController, player2: PlayerController) {
     const game = new Game(this)
     game.create(player1, player2)
-    player1.startGame()
-    player2.startGame()
+    player1.startGame(player2)
+    player2.startGame(player1)
     this.games.set(game.id, game)
     console.info('A new game has been created with id:', game.id)
   }
