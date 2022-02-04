@@ -1,9 +1,11 @@
 # WebChess
 
-Online chess platform. Connect, play against other users, watch replays of your games as well as famous chess games, track progress on leaderboard.
+Online chess platform. Connect, play against other users, watch replays of your games as well as famous chess games, track progress on leaderboard. Webchess has been deployed on Heroku : [https://webchessmate.herokuapp.com](https://webchessmate.herokuapp.com)
 
 ![webchess dashboard](https://i.ibb.co/9cJk9hL/wchess-chat.png)
 ![webchess chessboard](https://i.ibb.co/GVQgYRz/wchess2.png)
+
+
 
 ## Features:
 
@@ -90,18 +92,22 @@ VUE_APP_OKTA_ISSUER=https://YOUR_OKTA_DOMAIN_HERE/oauth2/default
 ```
 
 ### 5. Start Webchess
-Now you should be able to start the Webchess server and client (don't forgot to install the dependancies).
+Now you should be able to start the Webchess server and client (don't forget to install the dependancies).
 
+Start server:
 ```Shell
 cd server
 npm install
-npm run start
+npm run dev
 ```
+Start client:
 ```Shell
 cd client
 npm install
 npm run start
 ```
+Here the client (which is a Vue.js Single Page Application) is served from a Vue.js debug server usually launched on port 8080. However, for deploying, you may want to use the Webchess server to serve the client application. In order to do that, first build the client with ``npm run build`` and then copy the **client/dist** folder in the **server/views** folder.
+
 
 ### 6. Create player's account
 For now there is no way to register a new player on Webchess. So you need to add players's accounts manually. First add a new user on Okta : go to Okta dashboard > directory > people > add person. Then add a new document for the user on MongoDB, here is a template: 

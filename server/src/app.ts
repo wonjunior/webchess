@@ -6,6 +6,8 @@ import mongoose from 'mongoose'
 import { MONGO_CONNECTION_STRING } from './config'
 import Router from './router/main.router'
 import Authenticator from './middleware/Authenticator'
+import historyApiFallback from 'connect-history-api-fallback'
+
 
 class App {
   public app: Application
@@ -25,6 +27,8 @@ class App {
     this.app.use(bodyParser.json({ limit: '50mb' }))
     this.app.use(bodyParser.urlencoded({ limit: '50mb', extended: true }))
     this.app.use(cors())
+    this.app.use(historyApiFallback())
+    this.app.use('/', express.static('views'))
     this.app.use(this.authenticator.middleware.bind(this.authenticator))
   }
 
